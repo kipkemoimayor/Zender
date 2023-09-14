@@ -1,0 +1,11 @@
+<app>
+     <id>PLAT012A</id>
+     <name>IPF SME PSL OfferGen</name>
+     <provider>MIS</provider>
+     <description>A tool to generate offer letters</description>
+     <extensionpoint>
+          <location>LOAN_ACCOUNT_VIEW</location>
+          <label>IPF SME PSL OfferGen</label>
+          <url>https://docstracking.platinumcredit.co.tz/offer-letter-live/api/</url>
+     </extensionpoint>
+</app>
