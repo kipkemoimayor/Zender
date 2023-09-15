@@ -14,10 +14,5 @@
     "client": "mysql",
     "host":"localhost",
     "port":3306
-  },
-  "products":{
-    "priv":[],
-    "ipf":[],
-    "mif":[]
   }
 }

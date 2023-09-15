@@ -208,7 +208,7 @@ const util: Iutil = {
     for (let i = 0; i < cycle; i++) {
       const date = addMonth(startDate, i)
       const installment = {
-        index: i+1,
+        index: i + 1,
         date,
         amount
       }

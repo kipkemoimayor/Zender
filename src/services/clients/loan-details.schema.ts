@@ -10,12 +10,14 @@ import { dataValidator, queryValidator } from '../../validators'
 export const loanDetailsSchema = Type.Object(
   {
     id: Type.Number(),
-    loan_id: Type.String(),
-    file_id: Type.String(),
-    file_type: Type.String(),
-    client_id: Type.String(),
-    client_email: Type.String(),
-    date_generated: Type.Any({ default: new Date() })
+    fullName: Type.String(),
+    idNumber: Type.String(),
+    emailAddress: Type.String(),
+    phoneNumber: Type.String(),
+    location: Type.String(),
+    status: Type.Number({ default: 1 }),
+    createdAt: Type.String({ default: new Date() }),
+    updatedAt: Type.String({ default: new Date() })
   },
   { $id: 'LoanDetails', additionalProperties: false }
 )
@@ -27,9 +29,13 @@ export const loanDetailsExternalResolver = resolve<LoanDetails, HookContext>({})
 
 // 'file_id', 'file_type', 'client_id', 'client_email'
 // Schema for creating new entries
-export const loanDetailsDataSchema = Type.Pick(loanDetailsSchema, ['loan_id'], {
-  $id: 'LoanDetailsData'
-})
+export const loanDetailsDataSchema = Type.Pick(
+  loanDetailsSchema,
+  ['fullName', 'idNumber', 'emailAddress', 'phoneNumber', 'location', 'status'],
+  {
+    $id: 'LoanDetailsData'
+  }
+)
 export type LoanDetailsData = Static<typeof loanDetailsDataSchema>
 export const loanDetailsDataValidator = getValidator(loanDetailsDataSchema, dataValidator)
 export const loanDetailsDataResolver = resolve<LoanDetails, HookContext>({})
@@ -43,7 +49,7 @@ export const loanDetailsPatchValidator = getValidator(loanDetailsPatchSchema, da
 export const loanDetailsPatchResolver = resolve<LoanDetails, HookContext>({})
 
 // Schema for allowed query properties
-export const loanDetailsQueryProperties = Type.Pick(loanDetailsSchema, ['id', 'loan_id'])
+export const loanDetailsQueryProperties = Type.Pick(loanDetailsSchema, ['id', 'status'])
 export const loanDetailsQuerySchema = Type.Intersect(
   [
     querySyntax(loanDetailsQueryProperties),

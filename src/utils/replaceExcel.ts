@@ -6,7 +6,7 @@ import htmlToPdf from 'html-pdf-node'
 
 export const replaceExcel = (html: { content: string }, outputName: string) => {
   // Load an XLSX file into memory
-  let options = { height: "1700px", width: "1103px", printBackground: true, pageRanges: '1-1' }
+  let options = { height: '1700px', width: '1103px', printBackground: true, pageRanges: '1-1' }
   // Example of options with args //
   // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
 

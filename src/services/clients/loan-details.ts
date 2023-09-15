@@ -17,7 +17,6 @@ import {
 import type { Application } from '../../declarations'
 import { LoanDetailsService, getOptions } from './loan-details.class'
 import { loanDetailsPath, loanDetailsMethods } from './loan-details.shared'
-import { handleLoan } from '../../hooks/handle-loan'
 import { query } from '../../hooks/query'
 
 export * from './loan-details.class'
@@ -46,14 +45,11 @@ export const loanDetails = (app: Application) => {
         schemaHooks.validateQuery(loanDetailsQueryValidator),
         schemaHooks.resolveQuery(loanDetailsQueryResolver)
       ],
-      find: [
-        query
-      ],
+      find: [query],
       get: [],
       create: [
-        // schemaHooks.validateData(loanDetailsDataValidator),
-        // schemaHooks.resolveData(loanDetailsDataResolver),
-        handleLoan
+        schemaHooks.validateData(loanDetailsDataValidator),
+        schemaHooks.resolveData(loanDetailsDataResolver)
       ],
       patch: [
         schemaHooks.validateData(loanDetailsPatchValidator),

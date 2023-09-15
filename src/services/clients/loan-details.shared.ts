@@ -16,7 +16,7 @@ export type LoanDetailsClientService = Pick<
   (typeof loanDetailsMethods)[number]
 >
 
-export const loanDetailsPath = 'loan-details'
+export const loanDetailsPath = 'client'
 
 export const loanDetailsMethods = ['find', 'get', 'create', 'patch', 'remove'] as const
 
