@@ -11,7 +11,8 @@ import {
   deviceExternalResolver,
   deviceDataResolver,
   devicePatchResolver,
-  deviceQueryResolver
+  deviceQueryResolver,
+  deviceResultResolver
 } from './device.schema'
 
 import type { Application } from '../../declarations'
@@ -34,9 +35,10 @@ export const device = (app: Application) => {
   app.service(devicePath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(deviceExternalResolver),
-        schemaHooks.resolveResult(deviceResolver)
+        schemaHooks.resolveResult(deviceResolver),
+        schemaHooks.resolveResult(deviceResultResolver)
       ]
     },
     before: {
@@ -48,7 +50,8 @@ export const device = (app: Application) => {
       remove: []
     },
     after: {
-      all: []
+      all: [],
+      get: []
     },
     error: {
       all: []

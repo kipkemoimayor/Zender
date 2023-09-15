@@ -22,8 +22,6 @@ import { services } from './services/index'
 import { channels } from './channels'
 import middleware from './middleware'
 import bodyParser from 'body-parser'
-import { replaceHtml } from './utils/replaceExcel'
-import { addMonth } from './utils/date'
 
 const app: Application = express(feathers())
 
