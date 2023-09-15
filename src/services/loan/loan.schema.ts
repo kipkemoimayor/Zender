@@ -5,12 +5,21 @@ import type { Static } from '@feathersjs/typebox'
 
 import type { HookContext } from '../../declarations'
 import { dataValidator, queryValidator } from '../../validators'
+import { loanDetailsSchema } from '../clients/loan-details.schema'
 
 // Main data model schema
 export const loanSchema = Type.Object(
   {
     id: Type.Number(),
-    text: Type.String()
+    accountId: Type.String(),
+    firstRepaymentDate: Type.String(),
+    loanName: Type.String(),
+    status: Type.String(),
+    mambuImei: Type.String(),
+    clientId: Type.Integer(),
+    client: Type.Ref(loanDetailsSchema),
+    createdAt: Type.String({ default: new Date() }),
+    updatedAt: Type.String({ default: new Date() })
   },
   { $id: 'Loan', additionalProperties: false }
 )
@@ -21,9 +30,13 @@ export const loanResolver = resolve<Loan, HookContext>({})
 export const loanExternalResolver = resolve<Loan, HookContext>({})
 
 // Schema for creating new entries
-export const loanDataSchema = Type.Pick(loanSchema, ['text'], {
-  $id: 'LoanData'
-})
+export const loanDataSchema = Type.Pick(
+  loanSchema,
+  ['accountId', 'firstRepaymentDate', 'loanName', 'status', 'mambuImei', 'clientId'],
+  {
+    $id: 'LoanData'
+  }
+)
 export type LoanData = Static<typeof loanDataSchema>
 export const loanDataValidator = getValidator(loanDataSchema, dataValidator)
 export const loanDataResolver = resolve<Loan, HookContext>({})
@@ -37,7 +50,7 @@ export const loanPatchValidator = getValidator(loanPatchSchema, dataValidator)
 export const loanPatchResolver = resolve<Loan, HookContext>({})
 
 // Schema for allowed query properties
-export const loanQueryProperties = Type.Pick(loanSchema, ['id', 'text'])
+export const loanQueryProperties = Type.Pick(loanSchema, ['id', 'status'])
 export const loanQuerySchema = Type.Intersect(
   [
     querySyntax(loanQueryProperties),

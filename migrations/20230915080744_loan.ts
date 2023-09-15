@@ -5,7 +5,23 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('loan', (table) => {
     table.increments('id')
 
-    table.string('text')
+    table.string('accountId').unique()
+
+    table.dateTime('firstRepaymentDate')
+
+    table.string('loanName')
+
+    table
+      .string('status')
+      .defaultTo('ACTIVE')
+      .checkBetween(['ACTIVE', 'PENDING', 'CLOSED', 'ACTIVE_IN_ARREARS'])
+
+    table.string('mambuImei')
+
+    table.timestamps(true, true, true)
+
+    table.integer('clientId').unsigned()
+    table.foreign('clientId').references('client.id').onDelete('RESTRICT').onUpdate('CASCADE')
   })
 }
 

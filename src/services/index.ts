@@ -1,3 +1,4 @@
+import { device } from './device/device'
 import { loan } from './loan/loan'
 import { appEntry } from './app-entry/app-entry'
 import { loanDetails } from './clients/loan-details'
@@ -5,6 +6,7 @@ import { loanDetails } from './clients/loan-details'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(device)
   app.configure(loan)
   app.configure(appEntry)
   app.configure(loanDetails)

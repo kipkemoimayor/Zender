@@ -34,7 +34,7 @@ export const loan = (app: Application) => {
   app.service(loanPath).hooks({
     around: {
       all: [
-        authenticate('jwt'),
+        // authenticate('jwt'),
         schemaHooks.resolveExternal(loanExternalResolver),
         schemaHooks.resolveResult(loanResolver)
       ]

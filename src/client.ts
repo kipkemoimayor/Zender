@@ -4,6 +4,9 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { deviceClient } from './services/device/device.shared'
+export type { Device, DeviceData, DeviceQuery, DevicePatch } from './services/device/device.shared'
+
 import { loanClient } from './services/loan/loan.shared'
 export type { Loan, LoanData, LoanQuery, LoanPatch } from './services/loan/loan.shared'
 
@@ -39,7 +42,7 @@ export type ClientApplication = Application<ServiceTypes, Configuration>
  * @see https://dove.feathersjs.com/api/client.html
  * @returns The Feathers client application
  */
-export const createClient = <Configuration = any>(
+export const createClient = <Configuration = any,>(
   connection: TransportConnection<ServiceTypes>,
   authenticationOptions: Partial<AuthenticationClientOptions> = {}
 ) => {
@@ -52,5 +55,6 @@ export const createClient = <Configuration = any>(
   client.configure(loanDetailsClient)
   client.configure(appEntryClient)
   client.configure(loanClient)
+  client.configure(deviceClient)
   return client
 }
