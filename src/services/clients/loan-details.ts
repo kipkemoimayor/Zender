@@ -18,6 +18,9 @@ import type { Application } from '../../declarations'
 import { LoanDetailsService, getOptions } from './loan-details.class'
 import { loanDetailsPath, loanDetailsMethods } from './loan-details.shared'
 import { query } from '../../hooks/query'
+import { clientHook } from '../../hooks/client/client-hook'
+import { createLoan } from '../../hooks/loan/create-loan'
+import { discardData } from '../../hooks/dicardData'
 
 export * from './loan-details.class'
 export * from './loan-details.schema'
@@ -45,11 +48,15 @@ export const loanDetails = (app: Application) => {
         schemaHooks.validateQuery(loanDetailsQueryValidator),
         schemaHooks.resolveQuery(loanDetailsQueryResolver)
       ],
-      find: [query],
+      find: [
+        // query
+      ],
       get: [],
       create: [
         schemaHooks.validateData(loanDetailsDataValidator),
-        schemaHooks.resolveData(loanDetailsDataResolver)
+        schemaHooks.resolveData(loanDetailsDataResolver),
+        clientHook,
+        discardData
       ],
       patch: [
         schemaHooks.validateData(loanDetailsPatchValidator),
@@ -58,7 +65,8 @@ export const loanDetails = (app: Application) => {
       remove: []
     },
     after: {
-      all: []
+      all: [],
+      create: [createLoan]
     },
     error: {
       all: []

@@ -22,6 +22,7 @@ import { services } from './services/index'
 import { channels } from './channels'
 import middleware from './middleware'
 import bodyParser from 'body-parser'
+import { NuovoApi } from './nuovo/api'
 
 const app: Application = express(feathers())
 
@@ -56,6 +57,8 @@ app.configure(channels)
 // Configure a middleware for 404s and the error handler
 app.use(notFound())
 app.use(errorHandler({ logger }))
+
+// new NuovoApi().getAllDevices()
 
 // console.log(replaceHtml({startRepaymentDate:new Date().toDateString()}))
 

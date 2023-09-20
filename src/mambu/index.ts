@@ -1,13 +1,22 @@
 import { customAxios } from '../utils/axios'
 import { Imambu } from './index.dt'
 import { logger } from '../logger'
+import { Axconfig } from '../nuovo/api'
+import { Axios } from 'axios'
 
 export default class Mambu implements Imambu {
-  constructor() {}
+  config: Axconfig = {
+    baseUrl: process.env.mambu_api_url,
+    apiKey: process.env.mambu_api_key
+  }
+  axios: Axios
+  constructor() {
+    this.axios = customAxios(this.config)
+  }
 
   async getClient(clientID: string): Promise<any> {
     try {
-      const response = await customAxios().get(`/clients/${clientID}`, {
+      const response = await this.axios.get(`/clients/${clientID}`, {
         params: {
           detailsLevel: 'FULL'
         }
@@ -21,7 +30,7 @@ export default class Mambu implements Imambu {
 
   async getLoan(loanID: string, version: string = 'application/vnd.mambu.v2+json'): Promise<any> {
     try {
-      const response = await customAxios().get(`/loans/${loanID}`, {
+      const response = await this.axios.get(`/loans/${loanID}`, {
         params: {
           detailsLevel: 'FULL'
         },
@@ -38,7 +47,7 @@ export default class Mambu implements Imambu {
 
   async getLoanInstallment(loanID: string): Promise<any> {
     try {
-      const response = await customAxios().get(`/loans/${loanID}/schedule`, {
+      const response = await this.axios.get(`/loans/${loanID}/schedule`, {
         params: {
           limit: 1
         }
@@ -52,7 +61,7 @@ export default class Mambu implements Imambu {
 
   async getUser(userId: string) {
     try {
-      const response = await customAxios().get(`/users/${userId}`, {
+      const response = await this.axios.get(`/users/${userId}`, {
         params: {
           detailsLevel: 'FULL'
         }
@@ -66,7 +75,7 @@ export default class Mambu implements Imambu {
 
   async getRole(roleId: string) {
     try {
-      const response = await customAxios().get(`/userroles/${roleId}`, {
+      const response = await this.axios.get(`/userroles/${roleId}`, {
         params: {
           detailsLevel: 'FULL'
         }

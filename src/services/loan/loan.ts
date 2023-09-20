@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { LoanService, getOptions } from './loan.class'
 import { loanPath, loanMethods } from './loan.shared'
+import { addDevice } from '../../hooks/device/add-device'
 
 export * from './loan.class'
 export * from './loan.schema'
@@ -48,7 +49,8 @@ export const loan = (app: Application) => {
       remove: []
     },
     after: {
-      all: []
+      all: [],
+      create: [addDevice]
     },
     error: {
       all: []

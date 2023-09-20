@@ -12,14 +12,14 @@ export const loanSchema = Type.Object(
   {
     id: Type.Number(),
     accountId: Type.String(),
-    firstRepaymentDate: Type.String(),
+    firstRepaymentDate: Type.Any(),
     loanName: Type.String(),
     status: Type.String(),
     mambuImei: Type.String(),
     clientId: Type.Integer(),
     client: Type.Ref(loanDetailsSchema),
     createdAt: Type.String({ default: new Date() }),
-    updatedAt: Type.String({ default: new Date() })
+    updatedAt: Type.String({ default: new Date() }),
   },
   { $id: 'Loan', additionalProperties: false }
 )

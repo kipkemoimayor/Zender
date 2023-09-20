@@ -6,6 +6,7 @@ import type { Static } from '@feathersjs/typebox'
 import type { HookContext } from '../../declarations'
 import { dataValidator, queryValidator } from '../../validators'
 import { LoanData, loanSchema } from '../loan/loan.schema'
+import { loanDetailsDataSchema } from '../clients/loan-details.schema'
 
 // Main data model schema
 export const deviceSchema = Type.Object(
@@ -16,7 +17,18 @@ export const deviceSchema = Type.Object(
     loanId: Type.Integer(),
     loan: Type.Ref(loanSchema),
     createdAt: Type.String({ format: 'date-time' }),
-    updatedAt: Type.String({ format: 'date-time' })
+    updatedAt: Type.String({ format: 'date-time' }),
+    serialNo: Type.String(),
+    make: Type.String(),
+    model: Type.String(),
+    locked: Type.Boolean(),
+    mambuSynced: Type.Optional(Type.Boolean({ default: false })),
+    mambuSyncedAt: Type.Optional(Type.Any()),
+    nuovoSynced: Type.Optional(Type.Boolean({ default: false })),
+    nuovoSyncedAt: Type.Optional(Type.Any()),
+    clientId: Type.Integer(),
+    client: Type.Ref(loanDetailsDataSchema),
+    nuovoDeviceId: Type.Optional(Type.Integer())
   },
   { $id: 'Device', additionalProperties: false }
 )
@@ -27,9 +39,13 @@ export const deviceResolver = resolve<Device, HookContext>({})
 export const deviceExternalResolver = resolve<Device, HookContext>({})
 
 // Schema for creating new entries
-export const deviceDataSchema = Type.Pick(deviceSchema, ['imei', 'status', 'loanId'], {
-  $id: 'DeviceData'
-})
+export const deviceDataSchema = Type.Pick(
+  deviceSchema,
+  ['imei', 'status', 'loanId', 'serialNo', 'make', 'model', 'locked', 'clientId', 'nuovoDeviceId'],
+  {
+    $id: 'DeviceData'
+  }
+)
 export type DeviceData = Static<typeof deviceDataSchema>
 export const deviceDataValidator = getValidator(deviceDataSchema, dataValidator)
 export const deviceDataResolver = resolve<Device, HookContext>({})

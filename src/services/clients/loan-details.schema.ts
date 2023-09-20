@@ -18,8 +18,10 @@ export const loanDetailsSchema = Type.Object(
     status: Type.Number({ default: 1 }),
     createdAt: Type.String({ default: new Date() }),
     updatedAt: Type.String({ default: new Date() })
+    // loanId: Type.Optional(Type.String()),
+    // imei: Type.Optional(Type.String())
   },
-  { $id: 'LoanDetails', additionalProperties: false }
+  { $id: 'LoanDetails', additionalProperties: true }
 )
 export type LoanDetails = Static<typeof loanDetailsSchema>
 export const loanDetailsValidator = getValidator(loanDetailsSchema, dataValidator)
@@ -49,7 +51,12 @@ export const loanDetailsPatchValidator = getValidator(loanDetailsPatchSchema, da
 export const loanDetailsPatchResolver = resolve<LoanDetails, HookContext>({})
 
 // Schema for allowed query properties
-export const loanDetailsQueryProperties = Type.Pick(loanDetailsSchema, ['id', 'status'])
+export const loanDetailsQueryProperties = Type.Pick(loanDetailsSchema, [
+  'id',
+  'status',
+  'phoneNumber',
+  'idNumber'
+])
 export const loanDetailsQuerySchema = Type.Intersect(
   [
     querySyntax(loanDetailsQueryProperties),
