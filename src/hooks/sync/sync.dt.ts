@@ -51,7 +51,18 @@ export interface Sync {
    * @param clientId  client id
    * @returns void
    */
-  proccessNuovoSycn: (app: Application, device: any, deviceId: number, loanAccountId: string) => void
+  proccessNuovoSync: (app: Application, device: any, deviceId: number, loanAccountId: string) => void
+  /**
+   * Searches for failed loans that failed to finish proccess of creating client device
+   * @param app App instance
+   * @returns an array of Laon details
+   */
   getFailedDevices: (app: Application) => Promise<Paginated<Loan>>
+  /**
+   * Checks mambu for imei field and searches it on nuovo the creates a client device
+   * @param app App instance
+   * @param loan stored loan details
+   * @returns void
+   */
   searchAndCreateDevice: (app: Application, loan: Loan) => void
 }

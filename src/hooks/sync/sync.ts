@@ -67,7 +67,7 @@ const syncData: Sync = {
       })
   },
 
-  async proccessNuovoSycn(app, device, deviceId, loanAccountId) {
+  async proccessNuovoSync(app, device, deviceId, loanAccountId) {
     const pathData = {
       customInformation: [
         {
@@ -156,7 +156,7 @@ const syncData: Sync = {
         return
       }
 
-      syncData.proccessNuovoSycn(app, response.device_info, device.id, device.loan.accountId)
+      syncData.proccessNuovoSync(app, response.device_info, device.id, device.loan.accountId)
     })
   },
   async getFailedDevices(app) {
