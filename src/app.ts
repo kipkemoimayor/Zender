@@ -23,6 +23,7 @@ import { channels } from './channels'
 import middleware from './middleware'
 import bodyParser from 'body-parser'
 import { NuovoApi } from './nuovo/api'
+import { syncJob } from './jobs/sync'
 
 const app: Application = express(feathers())
 
@@ -76,5 +77,7 @@ app.hooks({
   setup: [],
   teardown: []
 })
+
+syncJob(app)
 
 export { app }

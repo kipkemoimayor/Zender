@@ -18,9 +18,9 @@ export const deviceSchema = Type.Object(
     loan: Type.Ref(loanSchema),
     createdAt: Type.String({ format: 'date-time' }),
     updatedAt: Type.String({ format: 'date-time' }),
-    serialNo: Type.String(),
-    make: Type.String(),
-    model: Type.String(),
+    serialNo: Type.Optional(Type.Any()),
+    make: Type.Optional(Type.Any()),
+    model: Type.Optional(Type.Any()),
     locked: Type.Boolean(),
     mambuSynced: Type.Optional(Type.Boolean({ default: false })),
     mambuSyncedAt: Type.Optional(Type.Any()),
@@ -28,7 +28,7 @@ export const deviceSchema = Type.Object(
     nuovoSyncedAt: Type.Optional(Type.Any()),
     clientId: Type.Integer(),
     client: Type.Ref(loanDetailsDataSchema),
-    nuovoDeviceId: Type.Optional(Type.Integer())
+    nuovoDeviceId: Type.Optional(Type.String())
   },
   { $id: 'Device', additionalProperties: false }
 )
@@ -59,12 +59,12 @@ export const devicePatchValidator = getValidator(devicePatchSchema, dataValidato
 export const devicePatchResolver = resolve<Device, HookContext>({})
 
 // Schema for allowed query properties
-export const deviceQueryProperties = Type.Pick(deviceSchema, ['id', 'imei'])
+export const deviceQueryProperties = Type.Pick(deviceSchema, ['id', 'imei', 'mambuSynced', 'mambuSynced'])
 export const deviceQuerySchema = Type.Intersect(
   [
     querySyntax(deviceQueryProperties),
     // Add additional query properties here
-    Type.Object({}, { additionalProperties: false })
+    Type.Object({ $or: Type.Any(), $limit: Type.Any() }, { additionalProperties: false })
   ],
   { additionalProperties: false }
 )

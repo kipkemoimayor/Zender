@@ -1,7 +1,49 @@
 import { DeviceData } from '../../client'
 import type { HookContext } from '../../declarations'
 import { logger } from '../../logger'
+import Mambu from '../../mambu'
 import { NuovoApi } from '../../nuovo/api'
+
+export const cfData = {
+  customInformation: [
+    {
+      customFieldID: 'DD_012',
+      value: 3509628
+    },
+    {
+      customFieldID: 'WC_05',
+      value: 'Yes'
+    },
+    {
+      customFieldID: 'AL_01',
+      value: 20000
+    },
+    {
+      customFieldID: 'DC_02',
+      value: 'Yes'
+    },
+    {
+      customFieldID: 'PM_08',
+      value: 'Techno'
+    },
+    {
+      customFieldID: 'PIN_06',
+      value: '2239300123'
+    },
+    {
+      customFieldID: 'PSN_07',
+      value: '38499013'
+    },
+    {
+      customFieldID: 'PS_09',
+      value: 'Enrolled'
+    },
+    {
+      customFieldID: 'CN_010',
+      value: 'Collins Kipkemoi'
+    }
+  ]
+}
 
 export const addDevice = async (context: HookContext) => {
   const { data, result, app } = context
@@ -23,7 +65,8 @@ export const addDevice = async (context: HookContext) => {
       make: clientDevice.make,
       model: clientDevice.model,
       locked: clientDevice.locked,
-      clientId: result.clientId
+      clientId: result.clientId,
+      nuovoDeviceId: clientDevice.id
     }
 
     app
@@ -35,21 +78,81 @@ export const addDevice = async (context: HookContext) => {
         console.log(response.client)
 
         const client = await app.service('client').get(response.clientId)
+        const clientNames = client.fullName.split(' ')
         const customerData = {
           device: {
-            customer_name: client.fullName
-          },
-          device_custom_fields: [
-            {
-              user_custom_field_id: 632,
-              value: client.idNumber
+            user: {
+              first_name: clientNames[0],
+              last_name: clientNames[1],
+              // phone: '9876543210',
+              // email: 'test@gmail.com',
+              // address: 'Pune',
+              country: 'KE'
             }
-          ]
+          }
         }
         await new NuovoApi()
           .updateCustomer(clientDevice.id, customerData)
           .then((nvRes) => {
             logger.info('DEVICE DATA SYNCED SUCCESSFULLY')
+            //TODO:update mambu-nuovo sync status
+            app
+              .service('device')
+              ._patch(response.id, { nuovoSynced: true, nuovoSyncedAt: new Date() })
+              .then((nuovo) => {
+                // update mambu details
+                const pathData = {
+                  customInformation: [
+                    {
+                      customFieldID: 'DD_012', // Device ID
+                      value: clientDevice.id
+                    },
+                    {
+                      customFieldID: 'WC_05', // Whitelisting Of Client
+                      value: 'Yes'
+                    },
+                    {
+                      customFieldID: 'AL_01', // Approved limit
+                      value: 20000
+                    },
+                    {
+                      customFieldID: 'DC_02', // doc compliance
+                      value: 'Yes'
+                    },
+                    {
+                      customFieldID: 'PM_08', // model
+                      value: clientDevice.model || 'Not Recorded'
+                    },
+                    {
+                      customFieldID: 'PIN_06', // IMEI
+                      value: clientDevice.imei_no || 'Not Recorded'
+                    },
+                    {
+                      customFieldID: 'PSN_07', // S.N
+                      value: clientDevice.serial_no || 'Not Recorded'
+                    },
+                    {
+                      customFieldID: 'PS_09', // STATUS
+                      value: clientDevice.status == 'registered' ? 'Enrolled' : 'unregistered'
+                    },
+                    {
+                      customFieldID: 'CN_010', // Customer Name
+                      value: clientDevice.customer_name || 'Not Recorded'
+                    },
+                    {
+                      customFieldID: 'DN_013', // Device Name
+                      value: clientDevice.name || 'Not Recorded'
+                    }
+                  ]
+                }
+                new Mambu().updateLoan(result.accountId, pathData).then(() => {
+                  logger.info('DEVICE DATA SYNCED SUCCESSFULLY:MAMBU')
+                  app.service('device')._patch(response.id, { mambuSynced: true, mambuSyncedAt: new Date() })
+                })
+              })
+              .catch((error) => {
+                console.log(error)
+              })
           })
           .catch((ERR) => {
             console.log(ERR)

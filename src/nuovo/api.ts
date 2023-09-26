@@ -1,6 +1,7 @@
 import { Axios } from 'axios'
 import { logger } from '../logger'
 import { customAxios } from '../utils/axios'
+import { GeneralError } from '@feathersjs/errors'
 
 export interface Axconfig {
   baseUrl: string | undefined
@@ -38,17 +39,34 @@ export class NuovoApi {
     }
   }
 
-  async updateCustomer(deviceId: number, data: any) {
+  async getDevice(deviceId: any): Promise<any> {
     try {
-      const response = await this.axios.patch(`/devices/${deviceId}.json`, data)
+      const response = await this.axios.get(`/devices/${deviceId}.json`)
       return response.data
     } catch (error: any) {
       if (error.response) {
         logger.log('error', error.response)
       }
-
       //   logger.log('error', error)
       return error
+    }
+  }
+
+  async updateCustomer(deviceId: string, data: any) {
+    try {
+      const response = await this.axios.patch(`/devices/${deviceId}.json`, data)
+      return response.data
+    } catch (error: any) {
+      if (error.response) {
+        const errorLog = JSON.stringify({
+          level: 'error',
+          data: { ...error.response.data },
+          message: 'FAILED TO UPDATE NUOVO DEVICE'
+        })
+        logger.log('error', errorLog)
+      }
+      //   logger.log('error', error)
+      throw new GeneralError(error)
     }
   }
 }

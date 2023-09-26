@@ -68,6 +68,7 @@
     "knex": "^2.5.1",
     "libreoffice-convert": "^1.4.1",
     "mysql": "^2.18.1",
+    "node-schedule": "^2.1.1",
     "pizzip": "^3.1.4",
     "uuid": "^9.0.0",
     "winston": "^3.10.0",
