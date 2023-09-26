@@ -4,53 +4,11 @@ import { logger } from '../../logger'
 import Mambu from '../../mambu'
 import { NuovoApi } from '../../nuovo/api'
 
-export const cfData = {
-  customInformation: [
-    {
-      customFieldID: 'DD_012',
-      value: 3509628
-    },
-    {
-      customFieldID: 'WC_05',
-      value: 'Yes'
-    },
-    {
-      customFieldID: 'AL_01',
-      value: 20000
-    },
-    {
-      customFieldID: 'DC_02',
-      value: 'Yes'
-    },
-    {
-      customFieldID: 'PM_08',
-      value: 'Techno'
-    },
-    {
-      customFieldID: 'PIN_06',
-      value: '2239300123'
-    },
-    {
-      customFieldID: 'PSN_07',
-      value: '38499013'
-    },
-    {
-      customFieldID: 'PS_09',
-      value: 'Enrolled'
-    },
-    {
-      customFieldID: 'CN_010',
-      value: 'Collins Kipkemoi'
-    }
-  ]
-}
-
 export const addDevice = async (context: HookContext) => {
   const { data, result, app } = context
 
   // search for device
   const devices = await new NuovoApi().getAllDevices(data.mambuImei)
-  console.log(devices)
 
   const clientDevice = devices.devices.filter(
     (device) => device.imei_no === data.mambuImei || device.imei_no2 === data.mambuImei

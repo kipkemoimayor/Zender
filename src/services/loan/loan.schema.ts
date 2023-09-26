@@ -20,6 +20,7 @@ export const loanSchema = Type.Object(
     client: Type.Ref(loanDetailsSchema),
     createdAt: Type.String({ default: new Date() }),
     updatedAt: Type.String({ default: new Date() }),
+    retry: Type.Optional(Type.Integer({ default: 0 }))
   },
   { $id: 'Loan', additionalProperties: false }
 )
@@ -50,7 +51,7 @@ export const loanPatchValidator = getValidator(loanPatchSchema, dataValidator)
 export const loanPatchResolver = resolve<Loan, HookContext>({})
 
 // Schema for allowed query properties
-export const loanQueryProperties = Type.Pick(loanSchema, ['id', 'status'])
+export const loanQueryProperties = Type.Pick(loanSchema, ['id', 'status', 'retry'])
 export const loanQuerySchema = Type.Intersect(
   [
     querySyntax(loanQueryProperties),

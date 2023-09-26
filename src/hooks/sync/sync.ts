@@ -52,7 +52,7 @@ const syncData: Sync = {
     await new NuovoApi()
       .updateCustomer(device.device_info.id, customerData)
       .then(() => {
-        logger.info('DEVICE DATA SYNCED SUCCESSFULLY')
+        logger.info('DEVICE DATA SYNCED SUCCESSFULLY:NUOVO')
         app.service('device').patch(deviceId, { nuovoSynced: true, nuovoSyncedAt: new Date() })
       })
       .catch((error) => {
@@ -158,6 +158,104 @@ const syncData: Sync = {
 
       syncData.proccessNuovoSycn(app, response.device_info, device.id, device.loan.accountId)
     })
+  },
+  async getFailedDevices(app) {
+    const devices = await app.service('device').find({
+      paginate: false,
+      query: {
+        $select: ['loanId']
+      }
+    })
+
+    if (!devices.length) {
+      return
+    }
+
+    const devicesId = devices.map((device: Device) => device.loanId)
+
+    return app.service('loan').find({
+      query: {
+        id: {
+          $nin: devicesId
+        },
+        retry: {
+          $lte: 3
+        }
+      }
+    })
+  },
+  searchAndCreateDevice(app, loan) {
+    new Mambu()
+      .getLoan(loan.accountId)
+      .then((response) => {
+        // if
+        if (response['_EP'] && response['_EP'].PIN_06) {
+          // search nuovo
+          new NuovoApi()
+            .getAllDevices(response['_EP'].PIN_06)
+            .then((devices) => {
+              const clientDevice = devices.devices.filter(
+                (device) =>
+                  device.imei_no === response['_EP'].PIN_06 || device.imei_no2 === response['_EP'].PIN_06
+              )[0]
+
+              if (!clientDevice) {
+                logger.info('FAILED CREATING DEVICE-NO DEVICE FOUND IN NUOVO:API')
+                app.service('loan').patch(loan.id, { retry: (loan.retry || 0) + 1 })
+                return
+              }
+              // create device
+              const deviceData: DeviceData = {
+                imei: clientDevice.imei_no,
+                loanId: loan.id,
+                status: clientDevice.is_activated ? 'ACTIVE' : 'PENDING',
+                serialNo: clientDevice.serial_no,
+                make: clientDevice.make,
+                model: clientDevice.model,
+                locked: clientDevice.locked,
+                clientId: loan.clientId,
+                nuovoDeviceId: clientDevice.id
+              }
+
+              // create
+              app
+                .service('device')
+                .create(deviceData)
+                .then(async () => {
+                  logger.info('DEVICE CREATED SUCCESSFULLY:API')
+                })
+                .catch(() => {
+                  logger.info('FAILED CREATING DEVICE:API')
+                  app.service('loan').patch(loan.id, { retry: (loan.retry || 0) + 1 })
+                })
+            })
+            .catch((error) => {
+              // update loan failed
+              app.service('loan').patch(loan.id, { retry: (loan.retry || 0) + 1 })
+              if (error.response) {
+                const errorLog = JSON.stringify({
+                  level: 'erro',
+                  data: { ...error.response },
+                  message: 'FAILED TO GET DEVICE DETAILS:NUOVO'
+                })
+                logger.error(errorLog)
+                throw new GeneralError(error)
+              }
+            })
+        }
+      })
+      .catch((error) => {
+        app.service('loan').patch(loan.id, { retry: (loan.retry || 0) + 1 })
+        if (error.response) {
+          const errorLog = JSON.stringify({
+            level: 'error',
+            data: { ...error.response },
+            message: error.message
+          })
+          logger.error(errorLog)
+          throw new GeneralError(error)
+        }
+      })
   }
 }
 

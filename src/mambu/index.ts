@@ -6,11 +6,11 @@ import { Axios } from 'axios'
 import { GeneralError } from '@feathersjs/errors'
 
 export default class Mambu implements Imambu {
-  config: Axconfig = {
+  private config: Axconfig = {
     baseUrl: process.env.mambu_api_url,
     apiKey: process.env.mambu_api_key
   }
-  axios: Axios
+  private axios: Axios
   constructor() {
     this.axios = customAxios(this.config)
   }

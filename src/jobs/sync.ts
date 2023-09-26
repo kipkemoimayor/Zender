@@ -4,8 +4,20 @@ import syncData from '../hooks/sync/sync'
 const schedule = require('node-schedule')
 
 export const syncJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/10 * * * *', async function () {
+  const job = schedule.scheduleJob('*/1 * * * *', async function () {
     console.log('The answer to life, the universe, and everything!')
+
+    //check for failed device creation
+    const failedDevices = await syncData.getFailedDevices(app)
+    // end of failed
+
+    if (failedDevices.data.length) {
+      failedDevices.data.forEach((loan) => {
+        setTimeout(() => {
+          syncData.searchAndCreateDevice(app, loan)
+        }, 1000)
+      })
+    }
 
     const devices = await syncData.getPendingDevices(app)
 

@@ -1,5 +1,5 @@
 import { Application } from '@feathersjs/express'
-import { Device } from '../../client'
+import { Device, Loan } from '../../client'
 import { Paginated } from '@feathersjs/feathers'
 
 export interface Sync {
@@ -44,7 +44,7 @@ export interface Sync {
    * @returns void
    */
   processMambuSync: (app: Application, nuovoId: string, clientId: number, deviceId: number) => void
-   /**
+  /**
    * proccess nuovo-mambu sync
    * @param app Application instance
    * @param deviceId local device id
@@ -52,4 +52,6 @@ export interface Sync {
    * @returns void
    */
   proccessNuovoSycn: (app: Application, device: any, deviceId: number, loanAccountId: string) => void
+  getFailedDevices: (app: Application) => Promise<Paginated<Loan>>
+  searchAndCreateDevice: (app: Application, loan: Loan) => void
 }

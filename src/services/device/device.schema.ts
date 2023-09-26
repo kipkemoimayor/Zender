@@ -28,7 +28,7 @@ export const deviceSchema = Type.Object(
     nuovoSyncedAt: Type.Optional(Type.Any()),
     clientId: Type.Integer(),
     client: Type.Ref(loanDetailsDataSchema),
-    nuovoDeviceId: Type.Optional(Type.String())
+    nuovoDeviceId: Type.Optional(Type.Any())
   },
   { $id: 'Device', additionalProperties: false }
 )
@@ -64,7 +64,7 @@ export const deviceQuerySchema = Type.Intersect(
   [
     querySyntax(deviceQueryProperties),
     // Add additional query properties here
-    Type.Object({ $or: Type.Any(), $limit: Type.Any() }, { additionalProperties: false })
+    Type.Object({ $or: Type.Any(), $limit: Type.Any(), $select: Type.Any() }, { additionalProperties: false })
   ],
   { additionalProperties: false }
 )
