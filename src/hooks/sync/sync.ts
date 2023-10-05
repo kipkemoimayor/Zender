@@ -234,7 +234,7 @@ const syncData: Sync = {
               app.service('loan').patch(loan.id, { retry: (loan.retry || 0) + 1 })
               if (error.response) {
                 const errorLog = JSON.stringify({
-                  level: 'erro',
+                  level: 'error',
                   data: { ...error.response },
                   message: 'FAILED TO GET DEVICE DETAILS:NUOVO'
                 })

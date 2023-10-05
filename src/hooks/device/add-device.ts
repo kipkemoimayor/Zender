@@ -52,7 +52,7 @@ export const addDevice = async (context: HookContext) => {
         await new NuovoApi()
           .updateCustomer(clientDevice.id, customerData)
           .then((nvRes) => {
-            logger.info('DEVICE DATA SYNCED SUCCESSFULLY')
+            logger.info('DEVICE DATA SYNCED SUCCESSFULLY:NUOVO')
             //TODO:update mambu-nuovo sync status
             app
               .service('device')

@@ -6,7 +6,7 @@ import type { Static } from '@feathersjs/typebox'
 import type { HookContext } from '../../declarations'
 import { dataValidator, queryValidator } from '../../validators'
 import { LoanData, loanSchema } from '../loan/loan.schema'
-import { loanDetailsDataSchema } from '../clients/loan-details.schema'
+import { loanDetailsSchema } from '../clients/loan-details.schema'
 
 // Main data model schema
 export const deviceSchema = Type.Object(
@@ -27,8 +27,10 @@ export const deviceSchema = Type.Object(
     nuovoSynced: Type.Optional(Type.Boolean({ default: false })),
     nuovoSyncedAt: Type.Optional(Type.Any()),
     clientId: Type.Integer(),
-    client: Type.Ref(loanDetailsDataSchema),
-    nuovoDeviceId: Type.Optional(Type.Any())
+    client: Type.Ref(loanDetailsSchema),
+    nuovoDeviceId: Type.Optional(Type.Any()),
+    lockReady: Type.Optional(Type.Boolean({ default: false })),
+    lockReadyScheduleAt: Type.Optional(Type.Any())
   },
   { $id: 'Device', additionalProperties: false }
 )
@@ -41,7 +43,19 @@ export const deviceExternalResolver = resolve<Device, HookContext>({})
 // Schema for creating new entries
 export const deviceDataSchema = Type.Pick(
   deviceSchema,
-  ['imei', 'status', 'loanId', 'serialNo', 'make', 'model', 'locked', 'clientId', 'nuovoDeviceId'],
+  [
+    'imei',
+    'status',
+    'loanId',
+    'serialNo',
+    'make',
+    'model',
+    'locked',
+    'clientId',
+    'nuovoDeviceId',
+    'lockReady',
+    'lockReadyScheduleAt'
+  ],
   {
     $id: 'DeviceData'
   }
@@ -59,12 +73,28 @@ export const devicePatchValidator = getValidator(devicePatchSchema, dataValidato
 export const devicePatchResolver = resolve<Device, HookContext>({})
 
 // Schema for allowed query properties
-export const deviceQueryProperties = Type.Pick(deviceSchema, ['id', 'imei', 'mambuSynced', 'mambuSynced'])
+export const deviceQueryProperties = Type.Pick(deviceSchema, [
+  'id',
+  'imei',
+  'mambuSynced',
+  'mambuSynced',
+  'loanId',
+  'lockReady',
+  'lockReadyScheduleAt',
+  'locked'
+])
 export const deviceQuerySchema = Type.Intersect(
   [
     querySyntax(deviceQueryProperties),
     // Add additional query properties here
-    Type.Object({ $or: Type.Any(), $limit: Type.Any(), $select: Type.Any() }, { additionalProperties: false })
+    Type.Object(
+      {
+        $or: Type.Optional(Type.Any()),
+        $limit: Type.Optional(Type.Any()),
+        $select: Type.Optional(Type.Any())
+      },
+      { additionalProperties: false }
+    )
   ],
   { additionalProperties: false }
 )
@@ -73,6 +103,10 @@ export const deviceResultResolver = resolve<Device, HookContext>({
   loan: virtual(async (device, context) => {
     // Populate the user associated via `userId`
     return context.app.service('loan')._get(device.loanId)
+  }),
+  client: virtual(async (device, context) => {
+    // Populate the user associated via `userId`
+    return context.app.service('client')._get(device.clientId)
   })
 })
 

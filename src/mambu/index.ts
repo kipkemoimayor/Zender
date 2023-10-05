@@ -5,6 +5,9 @@ import { Axconfig } from '../nuovo/api'
 import { Axios } from 'axios'
 import { GeneralError } from '@feathersjs/errors'
 
+export interface Installment {
+  installments: any[]
+}
 export default class Mambu implements Imambu {
   private config: Axconfig = {
     baseUrl: process.env.mambu_api_url,
@@ -29,24 +32,70 @@ export default class Mambu implements Imambu {
     }
   }
 
-  async getLoan(loanID: any, version: string = 'application/vnd.mambu.v2+json'): Promise<any> {
+  async getLoan(loanID: any): Promise<any> {
     try {
       const response = await this.axios.get(`/loans/${loanID}`, {
         params: {
           detailsLevel: 'FULL'
-        },
-        headers: {
-          Accept: version
         }
       })
       return response.data
     } catch (error: any) {
-      logger.log('error', error.response)
+      if (error.response) {
+        const errorLog = JSON.stringify({
+          level: 'error',
+          data: { ...error.response.data },
+          message: 'FAILED TO FETCH LOAN ACCOUNT:MAMBU'
+        })
+        logger.log('error', errorLog)
+      }
       throw new GeneralError(error)
     }
   }
 
-  async getLoanInstallment(loanID: string): Promise<any> {
+  async searchLoans(encodedKeys: string[]): Promise<any[]> {
+    try {
+      const response = await this.axios.post(`/loans:search`, {
+        filterCriteria: [
+          {
+            field: 'encodedKey',
+            operator: 'IN',
+            values: encodedKeys
+          }
+        ]
+      })
+      return response.data
+    } catch (error: any) {
+      if (error.response) {
+        const errorLog = JSON.stringify({
+          level: 'error',
+          data: { ...error.response.data },
+          message: 'FAILED TO SEARCH LOANS:MAMBU'
+        })
+        logger.log('error', errorLog)
+      }
+      throw new GeneralError(error)
+    }
+  }
+
+  async getSchedule(loanAccountId: string): Promise<any[]> {
+    try {
+      const response = await this.axios.post(`/loans/${loanAccountId}/schedule`)
+      return response.data
+    } catch (error: any) {
+      if (error.response) {
+        const errorLog = JSON.stringify({
+          level: 'error',
+          data: { ...error.response.data },
+          message: 'FAILED TO FETCH INSTALLMENT:MAMBU'
+        })
+        logger.log('error', errorLog)
+      }
+      throw new GeneralError(error)
+    }
+  }
+
+  async getLoanInstallment(loanID: string): Promise<Installment> {
     try {
       const response = await this.axios.get(`/loans/${loanID}/schedule`, {
         params: {
@@ -54,9 +103,16 @@ export default class Mambu implements Imambu {
         }
       })
       return response.data
-    } catch (error) {
-      logger.log('error', error)
-      return null
+    } catch (error: any) {
+      if (error.response) {
+        const errorLog = JSON.stringify({
+          level: 'error',
+          data: { ...error.response.data },
+          message: 'FAILED TO FETCH INSTALLMENT:MAMBU'
+        })
+        logger.log('error', errorLog)
+      }
+      throw new GeneralError(error)
     }
   }
 

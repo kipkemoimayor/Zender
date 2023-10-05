@@ -12,6 +12,7 @@ import express, {
 import configuration from '@feathersjs/configuration'
 import socketio from '@feathersjs/socketio'
 require('dotenv').config()
+process.env.TZ = 'Africa/Nairobi'
 
 import type { Application } from './declarations'
 import { configurationValidator } from './configuration'
@@ -24,6 +25,12 @@ import middleware from './middleware'
 import bodyParser from 'body-parser'
 import { NuovoApi } from './nuovo/api'
 import { syncJob } from './jobs/sync'
+import { paymentJob } from './jobs/repayment'
+import { reminderJob } from './jobs/reminder'
+import util from './utils'
+import { lockJob } from './jobs/lock'
+import { unlockJob } from './jobs/unlock'
+import { smsJob } from './jobs/sendSMS'
 
 const app: Application = express(feathers())
 
@@ -78,6 +85,19 @@ app.hooks({
   teardown: []
 })
 
-syncJob(app)
+// syncJob(app)
+
+// Handle payment and schedules
+// paymentJob(app)
+
+// reminder job
+
+// reminderJob(app)
+
+// lockJob(app)
+
+// unlockJob(app)
+
+smsJob(app)
 
 export { app }

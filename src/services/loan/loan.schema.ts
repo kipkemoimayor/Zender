@@ -20,7 +20,14 @@ export const loanSchema = Type.Object(
     client: Type.Ref(loanDetailsSchema),
     createdAt: Type.String({ default: new Date() }),
     updatedAt: Type.String({ default: new Date() }),
-    retry: Type.Optional(Type.Integer({ default: 0 }))
+    retry: Type.Optional(Type.Integer({ default: 0 })),
+    encodedKey: Type.String(),
+    mambuSynced: Type.Optional(Type.Boolean()),
+    mambuSyncedAt: Type.Optional(Type.String({ format: 'date-time' })),
+    daysRemaining: Type.Optional(Type.Integer()),
+    paid: Type.Optional(Type.Boolean({ default: false })),
+    paidOff: Type.Optional(Type.Boolean({ default: false })),
+    daysToNextInstallment: Type.Optional(Type.Integer())
   },
   { $id: 'Loan', additionalProperties: false }
 )
@@ -33,7 +40,7 @@ export const loanExternalResolver = resolve<Loan, HookContext>({})
 // Schema for creating new entries
 export const loanDataSchema = Type.Pick(
   loanSchema,
-  ['accountId', 'firstRepaymentDate', 'loanName', 'status', 'mambuImei', 'clientId'],
+  ['accountId', 'firstRepaymentDate', 'loanName', 'status', 'mambuImei', 'clientId', 'encodedKey'],
   {
     $id: 'LoanData'
   }
@@ -51,7 +58,14 @@ export const loanPatchValidator = getValidator(loanPatchSchema, dataValidator)
 export const loanPatchResolver = resolve<Loan, HookContext>({})
 
 // Schema for allowed query properties
-export const loanQueryProperties = Type.Pick(loanSchema, ['id', 'status', 'retry'])
+export const loanQueryProperties = Type.Pick(loanSchema, [
+  'id',
+  'status',
+  'retry',
+  'daysRemaining',
+  'mambuSynced',
+  'mambuSyncedAt'
+])
 export const loanQuerySchema = Type.Intersect(
   [
     querySyntax(loanQueryProperties),

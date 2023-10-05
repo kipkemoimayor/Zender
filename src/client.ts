@@ -4,6 +4,33 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { deviceLockHistoryClient } from './services/device-lock-history/device-lock-history.shared'
+export type {
+  DeviceLockHistory,
+  DeviceLockHistoryData,
+  DeviceLockHistoryQuery,
+  DeviceLockHistoryPatch
+} from './services/device-lock-history/device-lock-history.shared'
+
+import { sentSmsClient } from './services/sent-sms/sent-sms.shared'
+export type { SentSms, SentSmsData, SentSmsQuery, SentSmsPatch } from './services/sent-sms/sent-sms.shared'
+
+import { smsQueueClient } from './services/sms-queue/sms-queue.shared'
+export type {
+  SmsQueue,
+  SmsQueueData,
+  SmsQueueQuery,
+  SmsQueuePatch
+} from './services/sms-queue/sms-queue.shared'
+
+import { reminderClient } from './services/reminder/reminder.shared'
+export type {
+  Reminder,
+  ReminderData,
+  ReminderQuery,
+  ReminderPatch
+} from './services/reminder/reminder.shared'
+
 import { deviceClient } from './services/device/device.shared'
 export type { Device, DeviceData, DeviceQuery, DevicePatch } from './services/device/device.shared'
 
@@ -42,7 +69,7 @@ export type ClientApplication = Application<ServiceTypes, Configuration>
  * @see https://dove.feathersjs.com/api/client.html
  * @returns The Feathers client application
  */
-export const createClient = <Configuration = any>(
+export const createClient = <Configuration = any,>(
   connection: TransportConnection<ServiceTypes>,
   authenticationOptions: Partial<AuthenticationClientOptions> = {}
 ) => {
@@ -56,5 +83,9 @@ export const createClient = <Configuration = any>(
   client.configure(appEntryClient)
   client.configure(loanClient)
   client.configure(deviceClient)
+  client.configure(reminderClient)
+  client.configure(smsQueueClient)
+  client.configure(sentSmsClient)
+  client.configure(deviceLockHistoryClient)
   return client
 }

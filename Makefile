@@ -1,2 +1,2 @@
 deploy:
-	rsync -e "ssh -i /home/collo/Desktop/Platinum/server/pcltz_security_register_key.pem" -av ./ --exclude=node_modules --exclude=.git --exclude=.env --exclude=config ubuntu@ec2-3-72-144-31.eu-central-1.compute.amazonaws.com:/var/www/html/production/pug-offerletters
+	rsync -e "ssh -i /home/collo/Desktop/Platinum/server/spectrum/Collins@24" -av ./ --exclude=node_modules --exclude=.git --exclude=logs  ubuntu@3.64.3.50:/var/www/html/test/easyphone/

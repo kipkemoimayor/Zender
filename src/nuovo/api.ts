@@ -69,4 +69,44 @@ export class NuovoApi {
       throw new GeneralError(error)
     }
   }
+
+  async lockDevice(deviceIds: number[]) {
+    try {
+      const response = await this.axios.patch(`/devices/lock.json`, {
+        device_ids: deviceIds
+      })
+      return response.data
+    } catch (error: any) {
+      if (error.response) {
+        const errorLog = JSON.stringify({
+          level: 'error',
+          data: { ...error.response.data },
+          message: 'FAILED TO UPDATE NUOVO DEVICE'
+        })
+        logger.log('error', errorLog)
+      }
+      //   logger.log('error', error)
+      throw new GeneralError(error)
+    }
+  }
+
+  async unlockDevice(deviceIds: number[]) {
+    try {
+      const response = await this.axios.patch(`/devices/unlock.json`, {
+        device_ids: deviceIds
+      })
+      return response.data
+    } catch (error: any) {
+      if (error.response) {
+        const errorLog = JSON.stringify({
+          level: 'error',
+          data: { ...error.response.data },
+          message: 'FAILED TO UPDATE NUOVO DEVICE'
+        })
+        logger.log('error', errorLog)
+      }
+      //   logger.log('error', error)
+      throw new GeneralError(error)
+    }
+  }
 }

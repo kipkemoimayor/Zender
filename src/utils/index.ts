@@ -1,4 +1,4 @@
-const { createHmac } = require('crypto')
+import { createHmac, privateDecrypt, publicEncrypt, constants, generateKeyPairSync } from 'crypto'
 const fs = require('fs')
 import path from 'path'
 
@@ -216,6 +216,67 @@ const util: Iutil = {
       installments.push(installment)
     }
     return installments
+  },
+  generateKeyPair() {
+    const keys = generateKeyPairSync('rsa', {
+      modulusLength: 2048,
+      publicKeyEncoding: {
+        type: 'pkcs1',
+        format: 'pem'
+      },
+      privateKeyEncoding: {
+        type: 'pkcs1',
+        format: 'pem'
+      }
+    })
+    return keys
+  },
+
+  writeToFile(filename, data, username) {
+    const dirname = path.dirname(path.join(__dirname, `../../keys/${username}/${filename}`))
+    if (fs.existsSync(dirname) == false) {
+      fs.mkdirSync(dirname)
+    }
+
+    fs.writeFileSync(path.join(__dirname, `../../keys/${username}/${filename}`), data)
+  },
+
+  readFromFile(filename, username) {
+    return fs.readFileSync(path.join(__dirname, `../../keys/${username}/${filename}`), {
+      encoding: 'utf-8'
+    })
+  },
+
+  encrypt(data, username) {
+    const { privateKey, publicKey } = util.generateKeyPair()
+    // save to file
+    util.writeToFile('private.pem', privateKey, username)
+    util.writeToFile('public.pem', publicKey, username)
+
+    const encryptedData = publicEncrypt(
+      {
+        key: publicKey,
+        padding: constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: process.env.ENCRTPTION_ALGORITHM
+      },
+      Buffer.from(data)
+    )
+
+    return { encryptedData }
+  },
+
+  decrypt(data, username) {
+    const privKey = util.readFromFile('private.pem', username)
+    const decryptString = privateDecrypt(
+      {
+        key: privKey,
+        padding: constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: process.env.ENCRTPTION_ALGORITHM
+      },
+      data
+    )
+
+    return decryptString
   }
 }
 
