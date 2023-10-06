@@ -5,7 +5,7 @@ import reminder from '../hooks/payments/reminder'
 const schedule = require('node-schedule')
 
 export const reminderJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+  const job = schedule.scheduleJob('*/11 * * * *', async function () {
     console.log('Reminder scheduler running')
     try {
       const duerClass = new DueReminder(app)
@@ -54,7 +54,8 @@ export const reminderJob = (app: Application) => {
             duerClass.createSms({
               message: `Dear customer please note that you have an upcoming easy phone repayment, please ensure to pay before ${mgs}`,
               destination: loan.client.phoneNumber,
-              direction: 'OUT'
+              direction: 'OUT',
+              sent: false
             })
           }
         })

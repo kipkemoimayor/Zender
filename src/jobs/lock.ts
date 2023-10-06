@@ -6,7 +6,7 @@ import reminder from '../hooks/payments/reminder'
 const schedule = require('node-schedule')
 
 export const lockJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+  const job = schedule.scheduleJob('*/6 * * * *', async function () {
     console.log('Lock scheduler running')
     try {
       const lockClass = new LockDevice(app)

@@ -2,6 +2,7 @@ import { Loan } from '../../client'
 import { Application } from '../../declarations'
 import { logger } from '../../logger'
 import Mambu from '../../mambu'
+import { changeDate } from '../../utils/date'
 import { Due } from './payment.dt'
 import reminder from './reminder'
 
@@ -68,7 +69,7 @@ export class DueReminder {
       query: {
         // sent: true,
         ...query,
-        $and: [{ createdAt: { $gt: nDate } }, { createdAt: { $lt: dDate } }]
+        $and: [{ createdAt: { $gt: startDate.toISOString() } }, { createdAt: { $lt: endDay.toISOString() } }]
       }
     })
   }
@@ -83,9 +84,10 @@ export class DueReminder {
     const deviceId = device.data[0].id
     if (reminder.days == 0) {
       // update device
+      const lockAtDate = changeDate(new Date(), 'endDay')
       app
         .service('device')
-        ._patch(deviceId, { lockReady: true, lockReadyScheduleAt: new Date() })
+        ._patch(deviceId, { lockReady: true, lockReadyScheduleAt: lockAtDate })
         .catch((error) => {
           logger.error(
             JSON.stringify({ message: 'FAILED TO UPDATE DEVICE LOCK STATUS', level: 'error', data: error })

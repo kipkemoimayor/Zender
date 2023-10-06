@@ -4,7 +4,7 @@ import syncData from '../hooks/sync/sync'
 const schedule = require('node-schedule')
 
 export const syncJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+  const job = schedule.scheduleJob('*/2 * * * *', async function () {
     console.log('The answer to life, the universe, and everything!')
 
     //check for failed device creation

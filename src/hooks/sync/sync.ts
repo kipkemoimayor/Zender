@@ -100,7 +100,7 @@ const syncData: Sync = {
         },
         {
           customFieldID: 'PS_09', // STATUS
-          value: device.status == 'registered' ? 'Enrolled' : 'unregistered'
+          value: device.status == 'registered' || device.status == 'enrolled' ? 'Enrolled' : 'Unregistered'
         },
         {
           customFieldID: 'CN_010', // Customer Name

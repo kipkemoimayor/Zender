@@ -7,7 +7,7 @@ import { logger } from '../logger'
 const schedule = require('node-schedule')
 
 export const unlockJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+  const job = schedule.scheduleJob('*/6 * * * *', async function () {
     console.log('un:Lock scheduler running')
     try {
       const lockClass = new LockDevice(app)

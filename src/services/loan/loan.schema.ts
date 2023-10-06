@@ -1,5 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve } from '@feathersjs/schema'
+import { resolve, virtual } from '@feathersjs/schema'
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox'
 import type { Static } from '@feathersjs/typebox'
 
@@ -74,6 +74,13 @@ export const loanQuerySchema = Type.Intersect(
   ],
   { additionalProperties: false }
 )
+
+export const loanResultResolver = resolve<Loan, HookContext>({
+  client: virtual(async (device, context) => {
+    // Populate the user associated via `userId`
+    return context.app.service('client')._get(device.clientId)
+  })
+})
 export type LoanQuery = Static<typeof loanQuerySchema>
 export const loanQueryValidator = getValidator(loanQuerySchema, queryValidator)
 export const loanQueryResolver = resolve<LoanQuery, HookContext>({})

@@ -91,7 +91,10 @@ export const addDevice = async (context: HookContext) => {
                     },
                     {
                       customFieldID: 'PS_09', // STATUS
-                      value: clientDevice.status == 'registered' ? 'Enrolled' : 'unregistered'
+                      value:
+                        clientDevice.status == 'registered' || clientDevice.status == 'enrolled'
+                          ? 'Enrolled'
+                          : 'Unregistered'
                     },
                     {
                       customFieldID: 'CN_010', // Customer Name

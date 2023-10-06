@@ -4,7 +4,7 @@ import reminder from '../hooks/payments/reminder'
 const schedule = require('node-schedule')
 
 export const paymentJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+  const job = schedule.scheduleJob('*/5 * * * *', async function () {
     console.log('payment scheduler running!')
     try {
       const loans = await reminder.getActiveLoans(app)
