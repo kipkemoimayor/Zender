@@ -30,7 +30,13 @@ export const deviceSchema = Type.Object(
     client: Type.Ref(loanDetailsSchema),
     nuovoDeviceId: Type.Optional(Type.Any()),
     lockReady: Type.Optional(Type.Boolean({ default: false })),
-    lockReadyScheduleAt: Type.Optional(Type.Any())
+    lockReadyScheduleAt: Type.Optional(Type.Any()),
+    lockDateSynced: Type.Optional(Type.Boolean({ default: false })),
+    nextLockDate: Type.Optional(Type.Any()),
+    initialLockDate: Type.Optional(Type.Any()),
+    lastConnectedAt: Type.Optional(Type.Any()),
+    reminderSet: Type.Optional(Type.Boolean({ default: false })),
+    reminderSetDate: Type.Optional(Type.Any())
   },
   { $id: 'Device', additionalProperties: false }
 )
@@ -54,7 +60,11 @@ export const deviceDataSchema = Type.Pick(
     'clientId',
     'nuovoDeviceId',
     'lockReady',
-    'lockReadyScheduleAt'
+    'lockReadyScheduleAt',
+    'lockDateSynced',
+    'nextLockDate',
+    'initialLockDate',
+    'lastConnectedAt'
   ],
   {
     $id: 'DeviceData'
@@ -76,12 +86,16 @@ export const devicePatchResolver = resolve<Device, HookContext>({})
 export const deviceQueryProperties = Type.Pick(deviceSchema, [
   'id',
   'imei',
+  'status',
   'mambuSynced',
   'mambuSynced',
   'loanId',
   'lockReady',
   'lockReadyScheduleAt',
-  'locked'
+  'locked',
+  'nextLockDate',
+  'reminderSet',
+  'reminderSetDate'
 ])
 export const deviceQuerySchema = Type.Intersect(
   [
@@ -96,7 +110,7 @@ export const deviceQuerySchema = Type.Intersect(
       { additionalProperties: false }
     )
   ],
-  { additionalProperties: false }
+  { additionalProperties: false}
 )
 
 export const deviceResultResolver = resolve<Device, HookContext>({

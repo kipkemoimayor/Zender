@@ -1,6 +1,7 @@
 import { createHmac, privateDecrypt, publicEncrypt, constants, generateKeyPairSync } from 'crypto'
 const fs = require('fs')
 import path from 'path'
+const dateFormat = require('date-format')
 
 import { Iutil } from './index.dt'
 import { addMonth } from './date'
@@ -277,6 +278,12 @@ const util: Iutil = {
     )
 
     return decryptString
+  },
+  sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  },
+  formatDate(date, format) {
+    return dateFormat(format,date)
   }
 }
 

@@ -61,6 +61,7 @@
     "@feathersjs/transport-commons": "^5.0.8",
     "@feathersjs/typebox": "^5.0.8",
     "compression": "^1.7.4",
+    "date-format": "^4.0.14",
     "docxtemplater": "^3.37.13",
     "dotenv": "^16.3.1",
     "handlebars": "^4.7.8",

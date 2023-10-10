@@ -1,24 +1,34 @@
 import { Application } from '../declarations'
 import { DueReminder } from '../hooks/payments/dueReminder'
 import reminder from '../hooks/payments/reminder'
+import util from '../utils'
 
 const schedule = require('node-schedule')
 
 export const reminderJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/11 * * * *', async function () {
-    console.log('Reminder scheduler running')
+  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+    console.log('REMINDER SCHEDULER:RUNNING')
     try {
       const duerClass = new DueReminder(app)
 
-      const unsentReminders = await duerClass.getReminders({})
+      const reminderDevices = await duerClass.getDeviceDueInOneDay()
 
-      const loanIds = duerClass.mapData(unsentReminders.data, 'loanId')
+      //filter out already sent reminders
 
-      console.log(loanIds)
-
-      const reminderLoans = await duerClass.getLoansDueInOneDay(loanIds)
-
-      console.log(reminderLoans)
+      const devicesDue = reminderDevices.filter((device) => {
+        if (device.reminderSet) {
+          if (
+            !(
+              util.formatDate(new Date(device.reminderSetDate), 'yyyy-MM-dd') ==
+              util.formatDate(new Date(), 'yyyy-MM-dd')
+            )
+          ) {
+            return device
+          }
+        } else {
+          return device
+        }
+      })
 
       // check mambu (Sanity checks) -- if client has already paid
 
@@ -28,35 +38,25 @@ export const reminderJob = (app: Application) => {
       endDay.setHours(23)
       endDay.setSeconds(59)
 
-      reminderLoans.data.forEach((loan) => {
-        duerClass.loanPaid(loan.accountId).then((response) => {
+      devicesDue.forEach((device) => {
+        duerClass.installmentPaid(device.loan.accountId, device).then((response) => {
           console.log(response)
-          if (response.days > 1) {
+
+          if (response.nextLockDate) {
             //update loan
-            reminder.updateLoan(app, loan, {
+            reminder.updateLoan(app, device.loan, {
               mambuSyncedAt: endDay,
               mambuSynced: true,
-              daysRemaining: response.days,
-              paid: response.paid,
-              daysToNextInstallment: response.daysToNextInstallment,
-              paidOff: response.paidOff
+              daysToNextInstallment: Math.floor(
+                new Date(response.nextLockDate).valueOf() / (1000 * 60 * 60 * 24)
+              )
             })
+
+            // update lock schedule
+            duerClass.setLockDate(app, device, response.nextLockDate)
           } else {
             // send reminders
-            duerClass.setReminders(app, loan, response)
-            const nextDay = new Date()
-            nextDay.setDate(nextDay.getDate() + 1)
-            nextDay.setMinutes(59)
-            nextDay.setHours(23)
-            nextDay.setSeconds(59)
-            const mgs: string = response.days == 0 ? 'end of day' : nextDay.toLocaleDateString()
-            // create sms
-            duerClass.createSms({
-              message: `Dear customer please note that you have an upcoming easy phone repayment, please ensure to pay before ${mgs}`,
-              destination: loan.client.phoneNumber,
-              direction: 'OUT',
-              sent: false
-            })
+            duerClass.setReminders(app, device)
           }
         })
       })

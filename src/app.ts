@@ -12,7 +12,6 @@ import express, {
 import configuration from '@feathersjs/configuration'
 import socketio from '@feathersjs/socketio'
 require('dotenv').config()
-process.env.TZ = 'Africa/Nairobi'
 
 import type { Application } from './declarations'
 import { configurationValidator } from './configuration'
@@ -85,19 +84,19 @@ app.hooks({
   teardown: []
 })
 
-syncJob(app)
+// syncJob(app)
 
-// Handle payment and schedules
-paymentJob(app)
+// // Handle payment and schedules
+// paymentJob(app)
 
-// reminder job
+// // reminder job
 
-reminderJob(app)
+// reminderJob(app)
 
-lockJob(app)
+// lockJob(app)
 
 unlockJob(app)
 
-smsJob(app)
+// smsJob(app)
 
 export { app }

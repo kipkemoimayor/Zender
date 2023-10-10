@@ -1,22 +1,29 @@
 import { Application } from '../declarations'
-import { DueReminder } from '../hooks/payments/dueReminder'
 import { LockDevice } from '../hooks/payments/lock'
-import reminder from '../hooks/payments/reminder'
+import { logger } from '../logger'
+import { NuovoApi } from '../nuovo/api'
 
 const schedule = require('node-schedule')
 
 export const lockJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/6 * * * *', async function () {
-    console.log('Lock scheduler running')
+  //run every 5 mins
+  const job = schedule.scheduleJob('*/14 * * * *', async function () {
+    console.log('LOCK SCHEDULER:RUNNING')
     try {
       const lockClass = new LockDevice(app)
       const devices = await lockClass.fetchAllPendingLocks()
-
+      logger.info('DEVICE LOCKED FOUND')
       if (!devices.length) return
-
-      const nuovoDeviceId = devices.map((device) => device.nuovoDeviceId)
-      lockClass.applyLock(nuovoDeviceId, devices, 'lock')
-      console.log(devices)
+      // FETCH NUOVO DEVICES
+      devices.forEach((device) => {
+        new NuovoApi().getDevice(device.nuovoDeviceId).then((response) => {
+          const nvDevice = response.device_info
+          lockClass.updateOneDevice(device.id, {
+            locked: nvDevice.locked,
+            lastConnectedAt: new Date(nvDevice.last_connected_at)
+          })
+        })
+      })
     } catch (error) {
       console.log(error)
     }

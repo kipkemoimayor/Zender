@@ -4,6 +4,14 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { lockDeviceClient } from './services/lock-device/lock-device.shared'
+export type {
+  LockDevice,
+  LockDeviceData,
+  LockDeviceQuery,
+  LockDevicePatch
+} from './services/lock-device/lock-device.shared'
+
 import { deviceLockHistoryClient } from './services/device-lock-history/device-lock-history.shared'
 export type {
   DeviceLockHistory,
@@ -87,5 +95,6 @@ export const createClient = <Configuration = any,>(
   client.configure(smsQueueClient)
   client.configure(sentSmsClient)
   client.configure(deviceLockHistoryClient)
+  client.configure(lockDeviceClient)
   return client
 }

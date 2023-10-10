@@ -1,23 +1,21 @@
-import { Application } from '../declarations'
-import { DueReminder } from '../hooks/payments/dueReminder'
-import { LockDevice } from '../hooks/payments/lock'
-import reminder from '../hooks/payments/reminder'
-import { logger } from '../logger'
+// For more information about this file see https://dove.feathersjs.com/guides/cli/hook.html
+import type { HookContext } from '../../declarations'
+import { DueReminder } from '../payments/dueReminder'
+import reminder from '../payments/reminder'
 
-const schedule = require('node-schedule')
+export const handleRepyamentHook = async (context: HookContext) => {
+  console.log(`Running hook unlock-hook on ${context.path}.${context.method}`)
+  const { data, app } = context
+  const duerClass = new DueReminder(app)
 
-export const unlockJob = (app: Application) => {
-  //RUNS EVERY TWO MINS
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
-    console.log('UN:LOCK SCHEDULER RUNNNING')
+  const device = await app.service('device').find({
+    query: {
+      imei: data.imei
+    }
+  })
+
+  if (device.data && data.type == 'REPAYMENT') {
     try {
-      const lockClass = new LockDevice(app)
-      const duerClass = new DueReminder(app)
-
-      const devices = await lockClass.fetchLockedDevices()
-
-      if (!devices.length) return
-
       // check repaymentt
       const endDay = new Date()
       endDay.setMilliseconds(0)
@@ -25,9 +23,8 @@ export const unlockJob = (app: Application) => {
       endDay.setHours(23)
       endDay.setSeconds(59)
 
-      devices.forEach((device) => {
+      device.data.forEach((device) => {
         duerClass.installmentPaid(device.loan.accountId, device).then((response) => {
-          console.log(response)
           if (response.nextLockDate) {
             //update loan
             reminder.updateLoan(app, device.loan, {
@@ -46,5 +43,8 @@ export const unlockJob = (app: Application) => {
     } catch (error) {
       console.log(error)
     }
-  })
+  } else if (data.type == 'REPAYMENTADJUSTED' && device.data) {
+    //
+    duerClass.handlePaymentAdjustment(device.data[0])
+  }
 }

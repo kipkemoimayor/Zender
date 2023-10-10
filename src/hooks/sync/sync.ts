@@ -7,7 +7,7 @@ import { NuovoApi } from '../../nuovo/api'
 
 const syncData: Sync = {
   isSynced(device: Device) {
-    return device.mambuSynced == true && device.mambuSynced == true
+    return device.mambuSynced == true && device.mambuSynced == true && device.lockDateSynced == true
   },
   isFullSynced() {
     return false
@@ -15,37 +15,55 @@ const syncData: Sync = {
   getPendingDevices(app) {
     return app.service('device').find({
       query: {
-        $or: [{ nuovoSynced: null }, { mambuSynced: null }],
+        $or: [{ nuovoSynced: null as any }, { mambuSynced: null as any }, { lockDateSynced: false }],
         $limit: 1
       }
     })
   },
-  async processMambuSync(app, nuovodeviceId, clientId, deviceId) {
-    if (!nuovodeviceId) {
+  async processMambuSync(app, devi) {
+    if (!devi.nuovoDeviceId || devi.nuovoSynced) {
       return
     }
-    const device = await new NuovoApi().getDevice(nuovodeviceId)
+    const device = await new NuovoApi().getDevice(devi.nuovoDeviceId)
 
     if (!device) {
       return
     }
-    const client = await app.service('client').get(clientId)
+    const client = await app.service('client').get(devi.clientId)
 
     if (!client) {
       return
     }
 
+    // get mambu installments
+
+    const installments = await new Mambu().getLoanInstallment(devi.loan.accountId)
+
+    const installment = installments.installments.filter(
+      (installment) =>
+        installment.state === 'PENDING' ||
+        installment.state === 'LATE' ||
+        installment.state == 'PARTIALLY_PAID'
+    )[0]
+
     const clientNames = client.fullName.split(' ')
     const customerData = {
       device: {
+        first_lock_date: installment.dueDate,
         user: {
           first_name: clientNames[0],
           last_name: clientNames[1],
-          // phone: '9876543210',
+          phone: client.phoneNumber,
           // email: 'test@gmail.com',
           // address: 'Pune',
           country: 'KE'
-        }
+        },
+        device_custom_fields: [
+          {
+            user_custom_field_id: 645,
+            value: client.idNumber
+          }
+        ]
       }
     }
 
@@ -53,7 +71,32 @@ const syncData: Sync = {
       .updateCustomer(device.device_info.id, customerData)
       .then(() => {
         logger.info('DEVICE DATA SYNCED SUCCESSFULLY:NUOVO')
-        app.service('device').patch(deviceId, { nuovoSynced: true, nuovoSyncedAt: new Date() })
+
+        new NuovoApi()
+          .scheduleDeviceLock([device.device_info.id], installment.dueDate)
+          .then(() => {
+            // update local device
+            app
+              .service('device')
+              ._patch(devi.id, {
+                lockDateSynced: true,
+                initialLockDate: new Date(installment.dueDate),
+                nextLockDate: new Date(installment.dueDate)
+              })
+              .catch((error) => {
+                logger.error(
+                  JSON.stringify({
+                    level: 'error',
+                    message: 'FAILED TO UPDATED DEVICE LOCK DATES',
+                    data: error
+                  })
+                )
+              })
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        app.service('device').patch(devi.id, { nuovoSynced: true, nuovoSyncedAt: new Date() })
       })
       .catch((error) => {
         if (error.response) {
@@ -109,6 +152,10 @@ const syncData: Sync = {
         {
           customFieldID: 'DN_013', // Device Name
           value: device.name || 'Not Recorded'
+        },
+        {
+          customFieldID: 'lastconnectat', // Device Name
+          value: device.last_connected_at
         }
       ]
     }
@@ -119,7 +166,7 @@ const syncData: Sync = {
   },
 
   syncMambuData(app, device) {
-    if (device.nuovoSynced) {
+    if (device.nuovoSynced && device.lockDateSynced) {
       return
     }
     // fetch loan from mambu
@@ -127,7 +174,7 @@ const syncData: Sync = {
       .getLoan(device.loan.accountId)
       .then((response) => {
         if (response['_EP'] && response['_EP'].PIN_06) {
-          syncData.processMambuSync(app, device.nuovoDeviceId || '', device.clientId, device.id)
+          syncData.processMambuSync(app, device)
         } else {
           const infoLog = JSON.stringify({
             level: 'info',
@@ -151,6 +198,10 @@ const syncData: Sync = {
     if (!device.nuovoDeviceId) {
       return
     }
+
+    if (device.mambuSynced) {
+      return
+    }
     new NuovoApi().getDevice(device.nuovoDeviceId).then((response) => {
       if (!response.device_info.customer_name) {
         return
@@ -161,15 +212,8 @@ const syncData: Sync = {
   },
   async getFailedDevices(app) {
     const devices = await app.service('device').find({
-      paginate: false,
-      query: {
-        $select: ['loanId']
-      }
+      paginate: false
     })
-
-    if (!devices.length) {
-      return
-    }
 
     const devicesId = devices.map((device: Device) => device.loanId)
 
@@ -255,6 +299,46 @@ const syncData: Sync = {
           logger.error(errorLog)
           throw new GeneralError(error)
         }
+      })
+  },
+  async syncLockDates(app, device) {
+    if (device.lockDateSynced || !device.nuovoDeviceId) {
+      return
+    }
+    // get mambu installments
+
+    const installments = await new Mambu().getLoanInstallment(device.loan.accountId)
+
+    const installment = installments.installments.filter(
+      (installment) =>
+        installment.state === 'PENDING' ||
+        installment.state === 'LATE' ||
+        installment.state == 'PARTIALLY_PAID'
+    )[0]
+
+    new NuovoApi()
+      .scheduleDeviceLock([device.nuovoDeviceId], installment.dueDate)
+      .then(() => {
+        // update local device
+        app
+          .service('device')
+          ._patch(device.id, {
+            lockDateSynced: true,
+            initialLockDate: new Date(installment.dueDate),
+            nextLockDate: new Date(installment.dueDate)
+          })
+          .catch((error) => {
+            logger.error(
+              JSON.stringify({
+                level: 'error',
+                message: 'FAILED TO UPDATED DEVICE LOCK DATES',
+                data: error
+              })
+            )
+          })
+      })
+      .catch((error) => {
+        console.log(error)
       })
   }
 }

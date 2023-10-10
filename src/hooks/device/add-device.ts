@@ -10,6 +10,15 @@ export const addDevice = async (context: HookContext) => {
   // search for device
   const devices = await new NuovoApi().getAllDevices(data.mambuImei)
 
+  // get mambu installments
+
+  const installments = await new Mambu().getLoanInstallment(result.accountId)
+
+  const installment = installments.installments.filter(
+    (installment) =>
+      installment.state === 'PENDING' || installment.state === 'LATE' || installment.state == 'PARTIALLY_PAID'
+  )[0]
+
   const clientDevice = devices.devices.filter(
     (device) => device.imei_no === data.mambuImei || device.imei_no2 === data.mambuImei
   )[0]
@@ -33,20 +42,25 @@ export const addDevice = async (context: HookContext) => {
       .then(async (response) => {
         logger.info('DEVICE CREATED SUCCESSFULLY')
         // update customer on nuovo
-        console.log(response.client)
-
         const client = await app.service('client').get(response.clientId)
         const clientNames = client.fullName.split(' ')
         const customerData = {
           device: {
+            first_lock_date: installment.dueDate,
             user: {
               first_name: clientNames[0],
               last_name: clientNames[1],
-              // phone: '9876543210',
+              phone: client.phoneNumber,
               // email: 'test@gmail.com',
               // address: 'Pune',
               country: 'KE'
-            }
+            },
+            device_custom_fields: [
+              {
+                user_custom_field_id: 645,
+                value: client.idNumber
+              }
+            ]
           }
         }
         await new NuovoApi()
@@ -54,6 +68,33 @@ export const addDevice = async (context: HookContext) => {
           .then((nvRes) => {
             logger.info('DEVICE DATA SYNCED SUCCESSFULLY:NUOVO')
             //TODO:update mambu-nuovo sync status
+            // update nuovo lock dates
+
+            new NuovoApi()
+              .scheduleDeviceLock([clientDevice.id], installment.dueDate)
+              .then(() => {
+                // update local device
+                app
+                  .service('device')
+                  ._patch(response.id, {
+                    lockDateSynced: true,
+                    initialLockDate: installment.dueDate,
+                    nextLockDate: installment.dueDate
+                  })
+                  .catch((error) => {
+                    logger.error(
+                      JSON.stringify({
+                        level: 'error',
+                        message: 'FAILED TO UPDATED DEVICE LOCK DATES',
+                        data: error
+                      })
+                    )
+                  })
+              })
+              .catch((error) => {
+                console.log(error)
+              })
+
             app
               .service('device')
               ._patch(response.id, { nuovoSynced: true, nuovoSyncedAt: new Date() })
@@ -103,6 +144,10 @@ export const addDevice = async (context: HookContext) => {
                     {
                       customFieldID: 'DN_013', // Device Name
                       value: clientDevice.name || 'Not Recorded'
+                    },
+                    {
+                      customFieldID: 'lastconnectat', // Device Name
+                      value: clientDevice.last_connected_at
                     }
                   ]
                 }

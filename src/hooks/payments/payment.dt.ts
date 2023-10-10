@@ -9,6 +9,12 @@ export interface Due {
   paidOff: boolean
 }
 
+export interface ReminderDue {
+  nextLockDate: string | null
+  installmentPaid: boolean
+  fullyPaid: boolean
+}
+
 export interface Payment {
   getActiveLoans: (app: Application) => Promise<Paginated<Loan>>
   getMambuLoan: (encodedKeys: string[]) => Promise<any[]>

@@ -1,3 +1,4 @@
+import { lockDevice } from './lock-device/lock-device'
 import { deviceLockHistory } from './device-lock-history/device-lock-history'
 import { sentSms } from './sent-sms/sent-sms'
 import { smsQueue } from './sms-queue/sms-queue'
@@ -10,6 +11,7 @@ import { loanDetails } from './clients/loan-details'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(lockDevice)
   app.configure(deviceLockHistory)
   app.configure(sentSms)
   app.configure(smsQueue)

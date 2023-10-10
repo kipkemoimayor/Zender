@@ -21,4 +21,6 @@ export interface Iutil {
   generateKeyPair: () => any
   writeToFile: (filename: string, data: string, user: string) => void
   readFromFile: (filename: string, user: string) => string
+  sleep: (ms: number) => Promise<any>
+  formatDate: (date: Date, format: string) => string
 }

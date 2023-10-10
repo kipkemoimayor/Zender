@@ -2,6 +2,7 @@
 import knex from 'knex'
 import type { Knex } from 'knex'
 import type { Application } from './declarations'
+import { logger } from './logger'
 
 declare module './declarations' {
   interface Configuration {
@@ -14,18 +15,10 @@ export const mysql = (app: Application) => {
   config.connection = process.env.DATABASE_CONNECTION
   // config.timzone = 'UTC+03:00'
 
-  const db = knex(config!)
-
-  // {
-  //   connection: config!,
-  //   pool: {
-  //     afterCreate: function (connection: any, callback: any) {
-  //       connection.query('SET time_zone = Africa/Nairobi;', function (err: any) {
-  //         callback(err, connection)
-  //       })
-  //     }
-  //   }
-  // }
+  const db = knex({
+    ...config
+    // debug: true
+  })
 
   app.set('mysqlClient', db)
 }

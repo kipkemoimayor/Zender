@@ -1,21 +1,19 @@
 import { Device, DeviceLockHistory, DeviceLockHistoryData } from '../../client'
 import { Application } from '../../declarations'
 import { NuovoApi } from '../../nuovo/api'
+import util from '../../utils'
 
 export class LockDevice {
   constructor(private app: Application) {}
 
   fetchAllPendingLocks() {
-    return this.app.service('device')._find({
+    return this.app.service('device').find({
       query: {
-        lockReady: true
-        // $and: [
-        //   {
-        //     lockReadyScheduleAt: {
-        //       $lt: new Date().valueOf()
-        //     }
-        //   }
-        // ]
+        reminderSet: true,
+        locked: false,
+        nextLockDate: {
+          $lte: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+        }
       },
       paginate: false
     })

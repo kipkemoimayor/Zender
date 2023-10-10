@@ -42,23 +42,11 @@ const reminder: Payment = {
     return filtered
   },
 
-  getExactDueDate(installments) {
+  getExactDueDate(immediateInstallment: any) {
     const today = new Date()
     today.setHours(0)
     today.setMinutes(0)
     today.setSeconds(0)
-
-    ///
-    const filtered = installments.filter((installment) => {
-      return new Date(installment.dueDate).valueOf() > today.valueOf()
-    })
-
-    if (!filtered.length) {
-      // repayment cleared
-      return false
-    }
-
-    const immediateInstallment = filtered[0]
 
     const paid = immediateInstallment.state === 'PAID' || immediateInstallment.state === 'LATE'
     const daysInMil = new Date(immediateInstallment.dueDate).valueOf() - today.valueOf()
@@ -69,7 +57,10 @@ const reminder: Payment = {
 
   getPendingInstallments(installments, sort) {
     const filtered: any[] = installments.filter(
-      (installment) => installment.state === 'PENDING' || installment.state == 'PARTIALY_PAID'
+      (installment) =>
+        installment.state === 'PENDING' ||
+        installment.state === 'LATE' ||
+        installment.state == 'PARTIALY_PAID'
     )
     if (sort) {
       return filtered.sort((a, b) => {
@@ -93,21 +84,13 @@ const reminder: Payment = {
     const pendingInstallment = installment[0]
     const instalmentdueDate: string = pendingInstallment.dueDate
     const daysRemaining = new Date(instalmentdueDate).valueOf() - today.valueOf()
-    const exactDueDate = reminder.getExactDueDate(installments)
-    if (typeof exactDueDate == 'boolean') {
-      return {
-        paidOff: true,
-        days: 0,
-        paid: true,
-        daysToNextInstallment: Math.round(daysRemaining / (1000 * 60 * 60 * 24))
-      }
-    } else {
-      return {
-        paidOff: false,
-        days: exactDueDate.days,
-        paid: exactDueDate.paid,
-        daysToNextInstallment: Math.round(daysRemaining / (1000 * 60 * 60 * 24))
-      }
+    const exactDueDate = reminder.getExactDueDate(pendingInstallment)
+
+    return {
+      paidOff: false,
+      days: Math.round(daysRemaining / (1000 * 60 * 60 * 24)),
+      paid: false,
+      daysToNextInstallment: Math.round(daysRemaining / (1000 * 60 * 60 * 24))
     }
 
     // return

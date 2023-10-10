@@ -14,6 +14,7 @@ export const reminderSchema = Type.Object(
     id: Type.Number(),
     type: Type.Integer(),
     sent: Type.Boolean({ default: false }),
+    message: Type.String(),
     scheduledAt: Type.Optional(Type.String({ format: 'date-time' })),
     device: Type.Ref(deviceSchema),
     deviceId: Type.Integer(),
@@ -31,9 +32,13 @@ export const reminderResolver = resolve<Reminder, HookContext>({})
 export const reminderExternalResolver = resolve<Reminder, HookContext>({})
 
 // Schema for creating new entries
-export const reminderDataSchema = Type.Pick(reminderSchema, ['type', 'loanId', 'deviceId'], {
-  $id: 'ReminderData'
-})
+export const reminderDataSchema = Type.Pick(
+  reminderSchema,
+  ['type', 'loanId', 'deviceId', 'message', 'sent'],
+  {
+    $id: 'ReminderData'
+  }
+)
 export type ReminderData = Static<typeof reminderDataSchema>
 export const reminderDataValidator = getValidator(reminderDataSchema, dataValidator)
 export const reminderDataResolver = resolve<Reminder, HookContext>({})
