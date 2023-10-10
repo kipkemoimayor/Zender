@@ -4,6 +4,7 @@ import { logger } from '../../logger'
 import Mambu from '../../mambu'
 import { Sync } from './sync.dt'
 import { NuovoApi } from '../../nuovo/api'
+import util from '../../utils'
 
 const syncData: Sync = {
   isSynced(device: Device) {
@@ -152,11 +153,11 @@ const syncData: Sync = {
         {
           customFieldID: 'DN_013', // Device Name
           value: device.name || 'Not Recorded'
-        },
-        {
-          customFieldID: 'lastconnectat', // Device Name
-          value: device.last_connected_at
         }
+        // {
+        //   customFieldID: 'lastconnectat', // Device Name
+        //   value: util.formatDate(new Date(device.last_connected_at), 'dd-MM-yyyy')
+        // }
       ]
     }
     new Mambu().updateLoan(loanAccountId, pathData).then(() => {

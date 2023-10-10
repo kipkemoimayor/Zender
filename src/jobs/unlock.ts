@@ -8,7 +8,7 @@ const schedule = require('node-schedule')
 
 export const unlockJob = (app: Application) => {
   //RUNS EVERY TWO MINS
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+  const job = schedule.scheduleJob('*/4 * * * *', async function () {
     console.log('UN:LOCK SCHEDULER RUNNNING')
     try {
       const lockClass = new LockDevice(app)

@@ -7,12 +7,12 @@ const schedule = require('node-schedule')
 
 export const lockJob = (app: Application) => {
   //run every 5 mins
-  const job = schedule.scheduleJob('*/14 * * * *', async function () {
+  const job = schedule.scheduleJob('*/5 * * * *', async function () {
     console.log('LOCK SCHEDULER:RUNNING')
     try {
       const lockClass = new LockDevice(app)
       const devices = await lockClass.fetchAllPendingLocks()
-      logger.info('DEVICE LOCKED FOUND')
+      if (devices.length) logger.info('DEVICE LOCKED FOUND')
       if (!devices.length) return
       // FETCH NUOVO DEVICES
       devices.forEach((device) => {

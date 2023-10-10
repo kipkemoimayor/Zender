@@ -18,5 +18,4 @@ export const formatQuery = async (context: HookContext) => {
     ...newQuery
   }
 
-  console.log(context.params.query)
 }

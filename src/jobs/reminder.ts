@@ -6,7 +6,7 @@ import util from '../utils'
 const schedule = require('node-schedule')
 
 export const reminderJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/1 * * * *', async function () {
+  const job = schedule.scheduleJob('*/2 * * * *', async function () {
     console.log('REMINDER SCHEDULER:RUNNING')
     try {
       const duerClass = new DueReminder(app)

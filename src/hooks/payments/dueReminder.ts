@@ -295,6 +295,12 @@ export class DueReminder {
     // lock device
     if (prevInstallment.length) {
       this.setLockDate(this.app, device, prevInstallment[0].dueDate, true)
+      // update device initial lock date
+      await new NuovoApi().updateCustomer(device.nuovoDeviceId, {
+        device: {
+          first_lock_date: prevInstallment[0].dueDate
+        }
+      })
       await util.sleep(5000)
       new LockDevice(this.app)
         .lockDevice([device.nuovoDeviceId])

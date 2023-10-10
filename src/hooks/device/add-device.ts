@@ -3,6 +3,7 @@ import type { HookContext } from '../../declarations'
 import { logger } from '../../logger'
 import Mambu from '../../mambu'
 import { NuovoApi } from '../../nuovo/api'
+import util from '../../utils'
 
 export const addDevice = async (context: HookContext) => {
   const { data, result, app } = context
@@ -78,8 +79,8 @@ export const addDevice = async (context: HookContext) => {
                   .service('device')
                   ._patch(response.id, {
                     lockDateSynced: true,
-                    initialLockDate: installment.dueDate,
-                    nextLockDate: installment.dueDate
+                    initialLockDate: new Date(installment.dueDate),
+                    nextLockDate: new Date(installment.dueDate)
                   })
                   .catch((error) => {
                     logger.error(
@@ -144,11 +145,11 @@ export const addDevice = async (context: HookContext) => {
                     {
                       customFieldID: 'DN_013', // Device Name
                       value: clientDevice.name || 'Not Recorded'
-                    },
-                    {
-                      customFieldID: 'lastconnectat', // Device Name
-                      value: clientDevice.last_connected_at
                     }
+                    // {
+                    //   customFieldID: 'lastconnectat', // Device Name
+                    //   value: util.formatDate(new Date(clientDevice.last_connected_at), 'dd-MM-yyyy')
+                    // }
                   ]
                 }
                 new Mambu().updateLoan(result.accountId, pathData).then(() => {
