@@ -31,6 +31,7 @@ import { lockJob } from './jobs/lock'
 import { unlockJob } from './jobs/unlock'
 import { smsJob } from './jobs/sendSMS'
 
+process.env.TZ = 'Africa/Nairobi'
 const app: Application = express(feathers())
 
 // Load app configuration

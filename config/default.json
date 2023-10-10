@@ -13,6 +13,7 @@
   "mysql": {
     "client": "mysql",
     "host":"localhost",
+    "timezone":"+3:00",
     "port":3306
   }
 }
