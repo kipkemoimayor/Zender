@@ -21,6 +21,7 @@ import { query } from '../../hooks/query'
 import { clientHook } from '../../hooks/client/client-hook'
 import { createLoan } from '../../hooks/loan/create-loan'
 import { discardData } from '../../hooks/dicardData'
+import { formatQuery } from '../../hooks/format-query'
 
 export * from './loan-details.class'
 export * from './loan-details.schema'
@@ -45,6 +46,7 @@ export const loanDetails = (app: Application) => {
     },
     before: {
       all: [
+        formatQuery,
         schemaHooks.validateQuery(loanDetailsQueryValidator),
         schemaHooks.resolveQuery(loanDetailsQueryResolver)
       ],

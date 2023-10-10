@@ -278,16 +278,13 @@ export class DueReminder {
 
   async handlePaymentAdjustment(device: Device) {
     const mambuInstallments = await new Mambu().getLoanInstallment(device.loan.accountId)
-    
+
     const installments = mambuInstallments.installments.filter((installment) => {
       return (
         util.formatDate(device.nextLockDate, 'yyyy-MM-dd hh:mm:ss') ===
         util.formatDate(new Date(installment.dueDate), 'yyyy-MM-dd hh:mm:ss')
       )
     })
-
-    console.log(installments);
-    
 
     const installment = installments[0]
 
@@ -298,8 +295,23 @@ export class DueReminder {
     // lock device
     if (prevInstallment.length) {
       this.setLockDate(this.app, device, prevInstallment[0].dueDate, true)
-      await util.sleep(3000)
-      new LockDevice(this.app).lockDevice([device.nuovoDeviceId])
+      await util.sleep(5000)
+      new LockDevice(this.app)
+        .lockDevice([device.nuovoDeviceId])
+        .then(() => {
+          console.log('DEVICE LOCKED SUCCESSFULLY:ADJUSTMENT')
+          // record history
+          this.app.service('device-lock-history').create({
+            deviceId: device.id,
+            reason: 'PAYMENT ADJUSTED',
+            loanId: device.loan.id,
+            type: 1,
+            lockedAt: new Date()
+          })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   }
 }

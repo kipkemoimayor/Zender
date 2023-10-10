@@ -89,13 +89,13 @@ app.hooks({
 // // Handle payment and schedules
 // paymentJob(app)
 
-// // reminder job
+// reminder job
 
 // reminderJob(app)
 
 // lockJob(app)
 
-unlockJob(app)
+// unlockJob(app)
 
 // smsJob(app)
 

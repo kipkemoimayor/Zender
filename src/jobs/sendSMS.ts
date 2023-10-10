@@ -5,7 +5,7 @@ const schedule = require('node-schedule')
 
 export const smsJob = (app: Application) => {
   const job = schedule.scheduleJob('*/1 * * * *', async function () {
-    console.log('sms scheduler running')
+    console.log('SMS SCHEDULER RUNNING')
     const smsClass = new SMS(app)
     const queuedSMS = await smsClass.getQueuedSms()
 

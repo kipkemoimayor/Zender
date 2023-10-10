@@ -22,6 +22,15 @@ export const lockJob = (app: Application) => {
             locked: nvDevice.locked,
             lastConnectedAt: new Date(nvDevice.last_connected_at)
           })
+
+          // record history
+          app.service('device-lock-history').create({
+            deviceId: device.id,
+            reason: 'NO PAYMENT RECIEVED',
+            loanId: device.loan.id,
+            type: 1,
+            lockedAt: new Date()
+          })
         })
       })
     } catch (error) {

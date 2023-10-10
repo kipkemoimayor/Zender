@@ -40,6 +40,15 @@ export const unlockJob = (app: Application) => {
 
             // update lock schedule
             duerClass.setLockDate(app, device, response.nextLockDate)
+
+            // record history
+            app.service('device-lock-history').create({
+              deviceId: device.id,
+              reason: 'REPAYMENT',
+              loanId: device.loan.id,
+              type: 2,
+              unlockedAt: new Date()
+            })
           }
         })
       })

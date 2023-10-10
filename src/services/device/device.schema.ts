@@ -95,7 +95,8 @@ export const deviceQueryProperties = Type.Pick(deviceSchema, [
   'locked',
   'nextLockDate',
   'reminderSet',
-  'reminderSetDate'
+  'reminderSetDate',
+  'clientId'
 ])
 export const deviceQuerySchema = Type.Intersect(
   [
@@ -110,7 +111,7 @@ export const deviceQuerySchema = Type.Intersect(
       { additionalProperties: false }
     )
   ],
-  { additionalProperties: false}
+  { additionalProperties: false }
 )
 
 export const deviceResultResolver = resolve<Device, HookContext>({

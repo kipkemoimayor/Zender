@@ -18,6 +18,7 @@ import {
 import type { Application } from '../../declarations'
 import { DeviceService, getOptions } from './device.class'
 import { devicePath, deviceMethods } from './device.shared'
+import { formatQuery } from '../../hooks/format-query'
 
 export * from './device.class'
 export * from './device.schema'
@@ -42,7 +43,11 @@ export const device = (app: Application) => {
       ]
     },
     before: {
-      all: [schemaHooks.validateQuery(deviceQueryValidator), schemaHooks.resolveQuery(deviceQueryResolver)],
+      all: [
+        formatQuery,
+        schemaHooks.validateQuery(deviceQueryValidator),
+        schemaHooks.resolveQuery(deviceQueryResolver)
+      ],
       find: [],
       get: [],
       create: [schemaHooks.validateData(deviceDataValidator), schemaHooks.resolveData(deviceDataResolver)],
