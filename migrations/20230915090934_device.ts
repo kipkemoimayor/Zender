@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema.createTable('device', (table) => {
     table.increments('id')
 
-    table.string('imei')
+    table.string('imei').unique()
 
     table.string('status').defaultTo(null).checkBetween(['ACTIVE', 'LOCKED', 'PENDING'])
 

@@ -4,6 +4,14 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { disbursmentClient } from './services/disbursment/disbursment.shared'
+export type {
+  Disbursment,
+  DisbursmentData,
+  DisbursmentQuery,
+  DisbursmentPatch
+} from './services/disbursment/disbursment.shared'
+
 import { lockDeviceClient } from './services/lock-device/lock-device.shared'
 export type {
   LockDevice,
@@ -96,5 +104,6 @@ export const createClient = <Configuration = any,>(
   client.configure(sentSmsClient)
   client.configure(deviceLockHistoryClient)
   client.configure(lockDeviceClient)
+  client.configure(disbursmentClient)
   return client
 }
