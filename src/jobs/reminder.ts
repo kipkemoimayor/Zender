@@ -53,7 +53,7 @@ export const reminderJob = (app: Application) => {
             })
 
             // update lock schedule
-            duerClass.setLockDate(app, device, response.nextLockDate)
+            duerClass.setLockDate(app, device, response)
           } else {
             // send reminders
             duerClass.setReminders(app, device)

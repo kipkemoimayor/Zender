@@ -36,7 +36,7 @@ export const handleRepyamentHook = async (context: HookContext) => {
             })
 
             // update lock schedule
-            duerClass.setLockDate(app, device, response.nextLockDate)
+            duerClass.setLockDate(app, device, response)
           }
         })
       })

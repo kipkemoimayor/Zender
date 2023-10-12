@@ -42,7 +42,7 @@ export const unlockJob = (app: Application) => {
             })
 
             // update lock schedule
-            duerClass.setLockDate(app, device, response.nextLockDate)
+            duerClass.setLockDate(app, device, response)
 
             // record history
             app.service('device-lock-history').create({

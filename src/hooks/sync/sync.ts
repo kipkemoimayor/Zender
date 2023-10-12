@@ -24,12 +24,12 @@ const syncData: Sync = {
         $or: [
           { nuovoSynced: null as any },
           { mambuSynced: null as any },
-          { lockDateSynced: false },
-          {
-            nextLockDate: {
-              $lt: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
-            }
-          }
+          { lockDateSynced: false }
+          // {
+          //   nextLockDate: {
+          //     $lt: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+          //   }
+          // }
         ],
         $limit: 1,
         locked: false
@@ -96,6 +96,7 @@ const syncData: Sync = {
               .service('device')
               ._patch(devi.id, {
                 lockDateSynced: true,
+                scheduleNumber: +installment.number,
                 initialLockDate: new Date(installment.dueDate),
                 nextLockDate: new Date(installment.dueDate)
               })

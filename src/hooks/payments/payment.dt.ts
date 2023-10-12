@@ -10,9 +10,10 @@ export interface Due {
 }
 
 export interface ReminderDue {
-  nextLockDate: string | null
+  nextLockDate: any
   installmentPaid: boolean
   fullyPaid: boolean
+  number: any
 }
 
 export interface Payment {

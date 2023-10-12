@@ -203,11 +203,12 @@ export class DueReminder {
   async installmentPaid(loanId: string, device: Device): Promise<ReminderDue> {
     const mambuInstallments = await new Mambu().getLoanInstallment(loanId)
 
+    // (
+    //   util.formatDate(device.nextLockDate, 'yyyy-MM-dd hh:mm:ss') ===
+    //   util.formatDate(new Date(installment.dueDate), 'yyyy-MM-dd hh:mm:ss')
+    // )
     const installments = mambuInstallments.installments.filter((installment) => {
-      return (
-        util.formatDate(device.nextLockDate, 'yyyy-MM-dd hh:mm:ss') ===
-        util.formatDate(new Date(installment.dueDate), 'yyyy-MM-dd hh:mm:ss')
-      )
+      return installment.number == device.scheduleNumber
     })
 
     const installment = installments[0]
@@ -222,13 +223,15 @@ export class DueReminder {
         return {
           nextLockDate: nextInstallment[0].dueDate,
           installmentPaid: true,
-          fullyPaid: false
+          fullyPaid: false,
+          number: +nextInstallment[0].number
         }
       } else {
         return {
           nextLockDate: null,
           installmentPaid: true,
-          fullyPaid: true
+          fullyPaid: true,
+          number: 0
         }
       }
     }
@@ -236,13 +239,14 @@ export class DueReminder {
     return {
       nextLockDate: null,
       installmentPaid: false,
-      fullyPaid: false
+      fullyPaid: false,
+      number: null
     }
   }
 
-  setLockDate(app: Application, device: Device, nextLockDate: string, locked: boolean = false) {
+  setLockDate(app: Application, device: Device, data: ReminderDue, locked: boolean = false) {
     new NuovoApi()
-      .scheduleDeviceLock([device.nuovoDeviceId], nextLockDate)
+      .scheduleDeviceLock([device.nuovoDeviceId], data.nextLockDate)
       .then(() => {
         // update local device
         logger.info('UPDATED NUOVO LOCK DATES SUCCESSFULLY')
@@ -250,10 +254,11 @@ export class DueReminder {
           .service('device')
           ._patch(device.id, {
             lockDateSynced: true,
-            initialLockDate: new Date(nextLockDate),
-            nextLockDate: new Date(nextLockDate),
+            initialLockDate: new Date(data.nextLockDate),
+            nextLockDate: new Date(data.nextLockDate),
             locked: locked,
-            lockReadyScheduleAt: new Date(nextLockDate)
+            scheduleNumber: data.number,
+            lockReadyScheduleAt: new Date(data.nextLockDate)
           })
           .catch((error) => {
             logger.error(
@@ -280,10 +285,7 @@ export class DueReminder {
     const mambuInstallments = await new Mambu().getLoanInstallment(device.loan.accountId)
 
     const installments = mambuInstallments.installments.filter((installment) => {
-      return (
-        util.formatDate(device.nextLockDate, 'yyyy-MM-dd hh:mm:ss') ===
-        util.formatDate(new Date(installment.dueDate), 'yyyy-MM-dd hh:mm:ss')
-      )
+      return installment.number == device.scheduleNumber
     })
 
     const installment = installments[0]
@@ -294,7 +296,17 @@ export class DueReminder {
 
     // lock device
     if (prevInstallment.length) {
-      this.setLockDate(this.app, device, prevInstallment[0].dueDate, true)
+      this.setLockDate(
+        this.app,
+        device,
+        {
+          nextLockDate: prevInstallment[0].dueDate,
+          number: prevInstallment[0].number,
+          fullyPaid: false,
+          installmentPaid: false
+        },
+        new Date().getTime() > new Date(prevInstallment[0].dueDate).getTime()
+      )
       // update device initial lock date
       await new NuovoApi().updateCustomer(device.nuovoDeviceId, {
         device: {

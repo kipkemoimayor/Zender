@@ -34,7 +34,8 @@ export const addDevice = async (context: HookContext) => {
       model: clientDevice.model,
       locked: clientDevice.locked,
       clientId: result.clientId,
-      nuovoDeviceId: clientDevice.id
+      nuovoDeviceId: clientDevice.id,
+      scheduleNumber: +installment.number
     }
 
     app
