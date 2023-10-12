@@ -8,7 +8,12 @@ import util from '../../utils'
 
 const syncData: Sync = {
   isSynced(device: Device) {
-    return device.mambuSynced == true && device.mambuSynced == true && device.lockDateSynced == true
+    return (
+      device.mambuSynced == true &&
+      device.mambuSynced == true &&
+      device.lockDateSynced == true &&
+      new Date(device.nextLockDate).valueOf() > new Date().valueOf()
+    )
   },
   isFullSynced() {
     return false
@@ -16,8 +21,18 @@ const syncData: Sync = {
   getPendingDevices(app) {
     return app.service('device').find({
       query: {
-        $or: [{ nuovoSynced: null as any }, { mambuSynced: null as any }, { lockDateSynced: false }],
-        $limit: 1
+        $or: [
+          { nuovoSynced: null as any },
+          { mambuSynced: null as any },
+          { lockDateSynced: false },
+          {
+            nextLockDate: {
+              $lt: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
+            }
+          }
+        ],
+        $limit: 1,
+        locked: false
       }
     })
   },
@@ -153,11 +168,11 @@ const syncData: Sync = {
         {
           customFieldID: 'DN_013', // Device Name
           value: device.name || 'Not Recorded'
+        },
+        {
+          customFieldID: 'lastconnectat', // Device Name
+          value: util.formatDate(new Date(device.last_connected_at), 'yyyy-MM-dd')
         }
-        // {
-        //   customFieldID: 'lastconnectat', // Device Name
-        //   value: util.formatDate(new Date(device.last_connected_at), 'dd-MM-yyyy')
-        // }
       ]
     }
     new Mambu().updateLoan(loanAccountId, pathData).then(() => {

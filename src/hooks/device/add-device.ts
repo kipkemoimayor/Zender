@@ -145,11 +145,11 @@ export const addDevice = async (context: HookContext) => {
                     {
                       customFieldID: 'DN_013', // Device Name
                       value: clientDevice.name || 'Not Recorded'
+                    },
+                    {
+                      customFieldID: 'lastconnectat', // Device Name
+                      value: util.formatDate(new Date(clientDevice.last_connected_at), 'yyyy-MM-dd')
                     }
-                    // {
-                    //   customFieldID: 'lastconnectat', // Device Name
-                    //   value: util.formatDate(new Date(clientDevice.last_connected_at), 'dd-MM-yyyy')
-                    // }
                   ]
                 }
                 new Mambu().updateLoan(result.accountId, pathData).then(() => {

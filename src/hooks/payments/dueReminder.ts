@@ -302,22 +302,25 @@ export class DueReminder {
         }
       })
       await util.sleep(5000)
-      new LockDevice(this.app)
-        .lockDevice([device.nuovoDeviceId])
-        .then(() => {
-          console.log('DEVICE LOCKED SUCCESSFULLY:ADJUSTMENT')
-          // record history
-          this.app.service('device-lock-history').create({
-            deviceId: device.id,
-            reason: 'PAYMENT ADJUSTED',
-            loanId: device.loan.id,
-            type: 1,
-            lockedAt: new Date()
+
+      if (new Date().getTime() > new Date(prevInstallment[0].dueDate).getTime()) {
+        new LockDevice(this.app)
+          .lockDevice([device.nuovoDeviceId])
+          .then(() => {
+            console.log('DEVICE LOCKED SUCCESSFULLY:ADJUSTMENT')
+            // record history
+            this.app.service('device-lock-history').create({
+              deviceId: device.id,
+              reason: 'PAYMENT ADJUSTED',
+              loanId: device.loan.id,
+              type: 1,
+              lockedAt: new Date()
+            })
           })
-        })
-        .catch((error) => {
-          console.log(error)
-        })
+          .catch((error) => {
+            console.log(error)
+          })
+      }
     }
   }
 }
