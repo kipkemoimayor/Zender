@@ -6,6 +6,6 @@
      <extensionpoint>
           <location>EXTENSION_MENU</location>
           <label>EASY PHONE-NUOVO</label>
-          <url>https://lgfdeposit.spectrumcreditltd.com/easyphone-test/api/</url>
+          <url>https://lgfdeposit.spectrumcreditltd.com/easyphone-prod/api/</url>
      </extensionpoint>
 </app>
