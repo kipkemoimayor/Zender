@@ -24,6 +24,7 @@ import { createLoan } from '../../hooks/loan/create-loan'
 import { discardData } from '../../hooks/dicardData'
 import { formatQuery } from '../../hooks/format-query'
 import { mambuAuth } from '../../hooks/auth/mambuAuth'
+import { AuthHook } from '../../hooks/auth/auth'
 
 export * from './loan-details.class'
 export * from './loan-details.schema'
@@ -65,6 +66,7 @@ export const loanDetails = (app: Application) => {
       ],
       get: [],
       create: [
+        AuthHook,
         schemaHooks.validateData(loanDetailsDataValidator),
         schemaHooks.resolveData(loanDetailsDataResolver),
         clientHook,

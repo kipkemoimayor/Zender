@@ -76,7 +76,7 @@ const syncData: Sync = {
         },
         device_custom_fields: [
           {
-            user_custom_field_id: 645,
+            user_custom_field_id: 632,
             value: client.idNumber
           }
         ]
@@ -132,18 +132,18 @@ const syncData: Sync = {
     const newDate = `${nuvoDate[1]}-${nuvoDate[0]}-${nuvoDate[2]}`
     const pathData = {
       customInformation: [
-        {
-          customFieldID: 'DD_012', // Device ID
-          value: device.id
-        },
-        {
-          customFieldID: 'WC_05', // Whitelisting Of Client
-          value: 'Yes'
-        },
-        {
-          customFieldID: 'AL_01', // Approved limit
-          value: 20000
-        },
+        // {
+        //   customFieldID: 'DD_012', // Device ID
+        //   value: device.id
+        // },
+        // {
+        //   customFieldID: 'WC_05', // Whitelisting Of Client
+        //   value: 'Yes'
+        // },
+        // {
+        //   customFieldID: 'AL_01', // Approved limit
+        //   value: 20000
+        // },
         {
           customFieldID: 'DC_02', // doc compliance
           value: 'Yes'

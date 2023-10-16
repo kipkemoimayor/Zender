@@ -14,7 +14,7 @@ export const loanDetailsSchema = Type.Object(
     idNumber: Type.String(),
     emailAddress: Type.String({ format: 'email' }),
     phoneNumber: Type.String(),
-    location: Type.String(),
+    location: Type.Optional(Type.String({ default: null })),
     status: Type.Number({ default: 1 }),
     createdAt: Type.String({ default: new Date() }),
     updatedAt: Type.String({ default: new Date() })

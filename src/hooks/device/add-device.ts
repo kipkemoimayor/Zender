@@ -59,7 +59,7 @@ export const addDevice = async (context: HookContext) => {
             },
             device_custom_fields: [
               {
-                user_custom_field_id: 645,
+                user_custom_field_id: 632,
                 value: client.idNumber
               }
             ]
@@ -114,18 +114,18 @@ export const addDevice = async (context: HookContext) => {
                       customFieldID: 'DD_012', // Device ID
                       value: clientDevice.id
                     },
-                    {
-                      customFieldID: 'WC_05', // Whitelisting Of Client
-                      value: 'Yes'
-                    },
-                    {
-                      customFieldID: 'AL_01', // Approved limit
-                      value: 20000
-                    },
-                    {
-                      customFieldID: 'DC_02', // doc compliance
-                      value: 'Yes'
-                    },
+                    // {
+                    //   customFieldID: 'WC_05', // Whitelisting Of Client
+                    //   value: 'Yes'
+                    // },
+                    // {
+                    //   customFieldID: 'AL_01', // Approved limit
+                    //   value: 20000
+                    // },
+                    // {
+                    //   customFieldID: 'DC_02', // doc compliance
+                    //   value: 'Yes'
+                    // },
                     {
                       customFieldID: 'PM_08', // model
                       value: clientDevice.model || 'Not Recorded'

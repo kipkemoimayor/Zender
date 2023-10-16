@@ -17,6 +17,7 @@ import type { Application } from '../../declarations'
 import { DisbursmentService, getOptions } from './disbursment.class'
 import { disbursmentPath, disbursmentMethods } from './disbursment.shared'
 import { handleDisbursmentHook } from '../../hooks/disbursment/new-disbursment'
+import { AuthHook } from '../../hooks/auth/auth'
 
 export * from './disbursment.class'
 export * from './disbursment.schema'
@@ -46,6 +47,7 @@ export const disbursment = (app: Application) => {
       find: [],
       get: [],
       create: [
+        AuthHook,
         handleDisbursmentHook,
         schemaHooks.validateData(disbursmentDataValidator),
         schemaHooks.resolveData(disbursmentDataResolver)
