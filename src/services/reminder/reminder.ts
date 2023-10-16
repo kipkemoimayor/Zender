@@ -1,5 +1,7 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
 import { authenticate } from '@feathersjs/authentication'
+import { iff, isProvider } from 'feathers-hooks-common'
+
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
 
@@ -18,6 +20,7 @@ import {
 import type { Application } from '../../declarations'
 import { ReminderService, getOptions } from './reminder.class'
 import { reminderPath, reminderMethods } from './reminder.shared'
+import { mambuAuth } from '../../hooks/auth/mambuAuth'
 
 export * from './reminder.class'
 export * from './reminder.schema'
@@ -46,7 +49,16 @@ export const reminder = (app: Application) => {
         schemaHooks.validateQuery(reminderQueryValidator),
         schemaHooks.resolveQuery(reminderQueryResolver)
       ],
-      find: [],
+      find: [
+        iff(
+          isProvider('external'),
+          (context) => {
+            context.ROLEACTION = 'canViewReminders'
+            return context
+          },
+          mambuAuth
+        )
+      ],
       get: [],
       create: [
         schemaHooks.validateData(reminderDataValidator),

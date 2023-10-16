@@ -15,5 +15,8 @@
     "host":"localhost",
     "timezone":"+3:00",
     "port":3306
+  },
+  "users":{
+    "8a93865988bb58880188bdf7eaaf0122": "admin"
   }
 }

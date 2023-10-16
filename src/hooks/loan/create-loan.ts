@@ -16,7 +16,9 @@ export const createLoan = async (context: HookContext) => {
     const loanSchemData: LoanData = {
       accountId: loan.id,
       clientId: result.id,
-      firstRepaymentDate: new Date(loan.disbursementDetails.firstRepaymentDate),
+      firstRepaymentDate: loan.disbursementDetails.firstRepaymentDate
+        ? new Date(loan.disbursementDetails.firstRepaymentDate)
+        : new Date(),
       loanName: loan.loanName,
       mambuImei: additionalData.imei,
       status: loan.accountState,

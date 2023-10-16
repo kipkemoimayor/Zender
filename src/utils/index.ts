@@ -283,7 +283,20 @@ const util: Iutil = {
     return new Promise((resolve) => setTimeout(resolve, ms))
   },
   formatDate(date, format) {
-    return dateFormat(format,date)
+    console.log(date, 'date')
+
+    return dateFormat(format, date)
+  },
+  addDateTimeZone(date) {
+    console.log('-----------------------')
+    console.log(date)
+    console.log('-----------------------')
+
+    const toIso = new Date(date)
+    console.log(toIso);
+    
+    const dateIso = toIso.toISOString().split('Z')[0]
+    return dateIso + '+03:00'
   }
 }
 

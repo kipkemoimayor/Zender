@@ -17,7 +17,6 @@ export const mysql = (app: Application) => {
 
   const db = knex({
     ...config
-    // debug: true
   })
 
   app.set('mysqlClient', db)

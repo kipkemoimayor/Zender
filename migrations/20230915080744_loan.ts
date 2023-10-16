@@ -14,7 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     table
       .string('status')
       .defaultTo('ACTIVE')
-      .checkBetween(['ACTIVE', 'PENDING', 'CLOSED', 'ACTIVE_IN_ARREARS'])
+      .checkBetween(['ACTIVE', 'PENDING_APPROVAL', 'CLOSED', 'ACTIVE_IN_ARREARS', 'CLOSED', 'LOCKED'])
 
     table.string('mambuImei')
 

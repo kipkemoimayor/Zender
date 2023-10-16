@@ -23,4 +23,5 @@ export interface Iutil {
   readFromFile: (filename: string, user: string) => string
   sleep: (ms: number) => Promise<any>
   formatDate: (date: Date, format: string) => string
+  addDateTimeZone: (date: any) => string
 }

@@ -109,7 +109,8 @@ export const deviceQuerySchema = Type.Intersect(
       {
         $or: Type.Optional(Type.Any()),
         $limit: Type.Optional(Type.Any()),
-        $select: Type.Optional(Type.Any())
+        $select: Type.Optional(Type.Any()),
+        getStats:Type.Optional(Type.Any()),
       },
       { additionalProperties: false }
     )

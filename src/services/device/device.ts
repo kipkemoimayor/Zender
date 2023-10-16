@@ -1,5 +1,6 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
 import { authenticate } from '@feathersjs/authentication'
+import { iff, isProvider } from 'feathers-hooks-common'
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
 
@@ -19,6 +20,8 @@ import type { Application } from '../../declarations'
 import { DeviceService, getOptions } from './device.class'
 import { devicePath, deviceMethods } from './device.shared'
 import { formatQuery } from '../../hooks/format-query'
+import { mambuAuth } from '../../hooks/auth/mambuAuth'
+import { statiscticsHook } from '../../hooks/numbers'
 
 export * from './device.class'
 export * from './device.schema'
@@ -48,7 +51,21 @@ export const device = (app: Application) => {
         schemaHooks.validateQuery(deviceQueryValidator),
         schemaHooks.resolveQuery(deviceQueryResolver)
       ],
-      find: [],
+      find: [
+        iff(
+          isProvider('external'),
+          (context) => {
+            if (context.params.query && context.params.query.getStats) {
+              context.getStats = true
+              delete context.params.query.getStats
+            }
+            context.ROLEACTION = 'canViewDevices'
+            return context
+          },
+          mambuAuth,
+          statiscticsHook
+        )
+      ],
       get: [],
       create: [schemaHooks.validateData(deviceDataValidator), schemaHooks.resolveData(deviceDataResolver)],
       patch: [schemaHooks.validateData(devicePatchValidator), schemaHooks.resolveData(devicePatchResolver)],

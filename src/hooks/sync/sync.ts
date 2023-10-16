@@ -128,6 +128,8 @@ const syncData: Sync = {
   },
 
   async proccessNuovoSync(app, device, deviceId, loanAccountId) {
+    const nuvoDate = device.last_connected_at.split('-')
+    const newDate = `${nuvoDate[1]}-${nuvoDate[0]}-${nuvoDate[2]}`
     const pathData = {
       customInformation: [
         {
@@ -171,8 +173,8 @@ const syncData: Sync = {
           value: device.name || 'Not Recorded'
         },
         {
-          customFieldID: 'lastconnectat', // Device Name
-          value: util.formatDate(new Date(device.last_connected_at), 'yyyy-MM-dd')
+          customFieldID: 'Lastconnected', // Device Name
+          value: util.addDateTimeZone(newDate)
         }
       ]
     }

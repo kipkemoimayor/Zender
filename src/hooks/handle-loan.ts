@@ -116,7 +116,7 @@ export const handleLoan = async (context: HookContext) => {
   let proccessingFee = 0
   let pslAppraisalFee = 0
   let pslExpectedAmount = 0
-  let installments = []
+  let installments:any = []
   let expectedInstallmentDate = ''
   let productState = 'Deducted'
 
@@ -147,7 +147,7 @@ export const handleLoan = async (context: HookContext) => {
     // get total principal balance
     principalBalance = getTotalPrincipalBalance(installmentData.installments)
 
-    const loanV1 = await getLoan(loanID, 'application/vnd.mambu.v1+json')
+    const loanV1 = await getLoan(loanID)
 
     applicationFees = getFee(loanV1.disbursementDetails.fees, 'Application Fees', loan.loanAmount)
     appraisalFee = getFee(loanV1.disbursementDetails.fees, 'Appraisal Fees', loan.loanAmount)

@@ -102,6 +102,12 @@ export const addDevice = async (context: HookContext) => {
               ._patch(response.id, { nuovoSynced: true, nuovoSyncedAt: new Date() })
               .then((nuovo) => {
                 // update mambu details
+                const nuvoDate = clientDevice.last_connected_at.split('-')
+
+                const newDate = `${nuvoDate[1]}-${nuvoDate[0]}-${nuvoDate[2]}`
+
+                console.log(newDate)
+
                 const pathData = {
                   customInformation: [
                     {
@@ -148,8 +154,8 @@ export const addDevice = async (context: HookContext) => {
                       value: clientDevice.name || 'Not Recorded'
                     },
                     {
-                      customFieldID: 'lastconnectat', // Device Name
-                      value: util.formatDate(new Date(clientDevice.last_connected_at), 'yyyy-MM-dd')
+                      customFieldID: 'Lastconnected', // Device Name
+                      value: util.addDateTimeZone(newDate)
                     }
                   ]
                 }

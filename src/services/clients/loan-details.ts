@@ -1,5 +1,6 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
 import { authenticate } from '@feathersjs/authentication'
+import { iff, isProvider } from 'feathers-hooks-common'
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
 
@@ -22,6 +23,7 @@ import { clientHook } from '../../hooks/client/client-hook'
 import { createLoan } from '../../hooks/loan/create-loan'
 import { discardData } from '../../hooks/dicardData'
 import { formatQuery } from '../../hooks/format-query'
+import { mambuAuth } from '../../hooks/auth/mambuAuth'
 
 export * from './loan-details.class'
 export * from './loan-details.schema'
@@ -52,6 +54,14 @@ export const loanDetails = (app: Application) => {
       ],
       find: [
         // query
+        iff(
+          isProvider('external'),
+          (context) => {
+            context.ROLEACTION = 'canViewClients'
+            return context
+          },
+          mambuAuth
+        )
       ],
       get: [],
       create: [

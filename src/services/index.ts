@@ -1,3 +1,4 @@
+import { numbers } from './numbers/numbers'
 import { disbursment } from './disbursment/disbursment'
 import { lockDevice } from './lock-device/lock-device'
 import { deviceLockHistory } from './device-lock-history/device-lock-history'
@@ -12,6 +13,7 @@ import { loanDetails } from './clients/loan-details'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(numbers)
   app.configure(disbursment)
   app.configure(lockDevice)
   app.configure(deviceLockHistory)
