@@ -2,6 +2,7 @@ import { Application } from '../declarations'
 import { LockDevice } from '../hooks/payments/lock'
 import { logger } from '../logger'
 import { NuovoApi } from '../nuovo/api'
+import util from '../utils'
 
 const schedule = require('node-schedule')
 
@@ -18,11 +19,27 @@ export const lockJob = (app: Application) => {
       devices.forEach((device) => {
         new NuovoApi().getDevice(device.nuovoDeviceId).then((response) => {
           const nvDevice = response.device_info
-          lockClass.updateOneDevice(device.id, {
-            locked: nvDevice.locked,
-            lastConnectedAt: new Date(nvDevice.last_connected_at)
-          })
+          const nuvoDate = nvDevice.last_connected_at.split('-')
 
+          const newDate = `${nuvoDate[1]}-${nuvoDate[0]}-${nuvoDate[2]}`
+
+          if (!nvDevice.locked) {
+            console.log('========')
+            console.log(nvDevice.last_connected_at)
+            console.log('========')
+
+            lockClass.lockDevice([nvDevice.id]).then(() => {
+              lockClass.updateOneDevice(device.id, {
+                locked: true,
+                lastConnectedAt: util.addDateTimeZone(newDate)
+              })
+            })
+          } else {
+            lockClass.updateOneDevice(device.id, {
+              locked: true,
+              lastConnectedAt: util.addDateTimeZone(newDate)
+            })
+          }
           // record history
           app.service('device-lock-history').create({
             deviceId: device.id,

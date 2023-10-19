@@ -49,7 +49,7 @@ export const loanDetails = (app: Application) => {
     },
     before: {
       all: [
-        formatQuery,
+        iff(isProvider('external'), formatQuery),
         schemaHooks.validateQuery(loanDetailsQueryValidator),
         schemaHooks.resolveQuery(loanDetailsQueryResolver)
       ],

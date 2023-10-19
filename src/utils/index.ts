@@ -288,15 +288,14 @@ const util: Iutil = {
     return dateFormat(format, date)
   },
   addDateTimeZone(date) {
-    console.log('-----------------------')
-    console.log(date)
-    console.log('-----------------------')
-
     const toIso = new Date(date)
-    console.log(toIso);
-    
     const dateIso = toIso.toISOString().split('Z')[0]
     return dateIso + '+03:00'
+  },
+  dateToMidnight(date: Date) {
+    const realDate = new Date(date)
+    realDate.setHours(23, 59, 59, 0)
+    return realDate
   }
 }
 

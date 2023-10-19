@@ -62,17 +62,17 @@ const syncData: Sync = {
         installment.state == 'PARTIALLY_PAID'
     )[0]
 
-    const clientNames = client.fullName.split(' ')
+    const clientNames = client.fullName.replace(/\s+/g, ' ').trim().split(' ')
+
     const customerData = {
       device: {
-        first_lock_date: installment.dueDate,
+        first_lock_date: util.dateToMidnight(installment.dueDate),
+        name: '',
         user: {
           first_name: clientNames[0],
           last_name: clientNames[1],
           phone: client.phoneNumber,
-          // email: 'test@gmail.com',
-          // address: 'Pune',
-          country: 'KE'
+          email: client.emailAddress
         },
         device_custom_fields: [
           {
@@ -89,7 +89,7 @@ const syncData: Sync = {
         logger.info('DEVICE DATA SYNCED SUCCESSFULLY:NUOVO')
 
         new NuovoApi()
-          .scheduleDeviceLock([device.device_info.id], installment.dueDate)
+          .scheduleDeviceLock([device.device_info.id], util.dateToMidnight(installment.dueDate))
           .then(() => {
             // update local device
             app
@@ -97,8 +97,8 @@ const syncData: Sync = {
               ._patch(devi.id, {
                 lockDateSynced: true,
                 scheduleNumber: +installment.number,
-                initialLockDate: new Date(installment.dueDate),
-                nextLockDate: new Date(installment.dueDate)
+                initialLockDate: util.dateToMidnight(installment.dueDate),
+                nextLockDate: util.dateToMidnight(installment.dueDate)
               })
               .catch((error) => {
                 logger.error(
@@ -170,7 +170,7 @@ const syncData: Sync = {
         },
         {
           customFieldID: 'DN_013', // Device Name
-          value: device.name || 'Not Recorded'
+          value: device.make + ' ' + device.model || 'Not Recorded'
         },
         {
           customFieldID: 'Lastconnected', // Device Name

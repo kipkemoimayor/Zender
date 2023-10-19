@@ -14,7 +14,7 @@ export const unlockJob = (app: Application) => {
       const lockClass = new LockDevice(app)
       const duerClass = new DueReminder(app)
 
-      const devices = await lockClass.fetchLockedDevices()
+      let devices = await lockClass.fetchLockedDevices()
 
       if (!devices.length) return
 
@@ -28,7 +28,6 @@ export const unlockJob = (app: Application) => {
       devices.forEach((device) => {
         duerClass.installmentPaid(device.loan.accountId, device).then((response) => {
           console.log('HERE=========================')
-          console.log(response)
           console.log('HERE=========================')
 
           if (response.nextLockDate) {

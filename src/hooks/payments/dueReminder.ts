@@ -18,6 +18,7 @@ export class DueReminder {
     dateFrom.setSeconds(0)
     dateFrom.setMilliseconds(0)
     const from = util.formatDate(dateFrom, 'yyyy-MM-dd hh:mm:ss')
+    console.log(from)
 
     const endDate = new Date()
     endDate.setDate(endDate.getDate() + 3)
@@ -27,6 +28,7 @@ export class DueReminder {
     endDate.setMilliseconds(0)
 
     const dateTo = util.formatDate(endDate, 'yyyy-MM-dd hh:mm:ss')
+    console.log(dateTo)
 
     return this.app.service('device').find({
       query: {
@@ -221,7 +223,7 @@ export class DueReminder {
 
       if (nextInstallment.length) {
         return {
-          nextLockDate: nextInstallment[0].dueDate,
+          nextLockDate: util.dateToMidnight(nextInstallment[0].dueDate),
           installmentPaid: true,
           fullyPaid: false,
           number: +nextInstallment[0].number
@@ -234,13 +236,22 @@ export class DueReminder {
           number: 0
         }
       }
-    }
-
-    return {
-      nextLockDate: null,
-      installmentPaid: false,
-      fullyPaid: false,
-      number: null
+    } else {
+      if (installment && new Date().valueOf() < util.dateToMidnight(installment.dueDate).valueOf()) {
+        return {
+          nextLockDate: util.dateToMidnight(installment.dueDate),
+          installmentPaid: false,
+          fullyPaid: false,
+          number: +installment.number
+        }
+      } else {
+        return {
+          nextLockDate: null,
+          installmentPaid: false,
+          fullyPaid: false,
+          number: null
+        }
+      }
     }
   }
 

@@ -5,7 +5,7 @@ import util from '../utils'
 const schedule = require('node-schedule')
 
 export const syncJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/6 * * * *', async function () {
+  const job = schedule.scheduleJob('*/2 * * * *', async function () {
     console.log('SYNC SCHEDULER:RUNNING!')
 
     //check for failed device creation

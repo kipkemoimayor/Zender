@@ -24,4 +24,5 @@ export interface Iutil {
   sleep: (ms: number) => Promise<any>
   formatDate: (date: Date, format: string) => string
   addDateTimeZone: (date: any) => string
+  dateToMidnight: (date: any) => any
 }

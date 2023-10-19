@@ -47,7 +47,7 @@ export const device = (app: Application) => {
     },
     before: {
       all: [
-        formatQuery,
+        iff(isProvider('external'), formatQuery),
         schemaHooks.validateQuery(deviceQueryValidator),
         schemaHooks.resolveQuery(deviceQueryResolver)
       ],

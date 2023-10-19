@@ -100,6 +100,4 @@ unlockJob(app)
 
 smsJob(app)
 
-// util.addDateTimeZone(util.formatDate(new Date("11-10-23 11:33:45 UTC"), 'yyyy-MM-dd hh:mm:ss'))
-
 export { app }

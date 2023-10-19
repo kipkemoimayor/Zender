@@ -3,7 +3,7 @@ import type { HookContext } from '../declarations'
 
 export const formatQuery = async (context: HookContext) => {
   const { query } = context.params
-  
+
   const newQuery: any = {}
 
   for (let i in query) {
@@ -15,7 +15,11 @@ export const formatQuery = async (context: HookContext) => {
   }
 
   context.params.query = {
-    ...newQuery
+    ...newQuery,
+    $sort: {
+      id: -1
+    }
   }
 
+  console.log(query)
 }

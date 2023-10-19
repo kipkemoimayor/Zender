@@ -11,6 +11,8 @@ export const addDevice = async (context: HookContext) => {
   // search for device
   const devices = await new NuovoApi().getAllDevices(data.mambuImei)
 
+  // const loan=
+
   // get mambu installments
 
   const installments = await new Mambu().getLoanInstallment(result.accountId)
@@ -45,17 +47,16 @@ export const addDevice = async (context: HookContext) => {
         logger.info('DEVICE CREATED SUCCESSFULLY')
         // update customer on nuovo
         const client = await app.service('client').get(response.clientId)
-        const clientNames = client.fullName.split(' ')
+        const clientNames = client.fullName.replace(/\s+/g, ' ').trim().split(' ')
         const customerData = {
           device: {
             first_lock_date: installment.dueDate,
+            name: '',
             user: {
               first_name: clientNames[0],
               last_name: clientNames[1],
               phone: client.phoneNumber,
-              // email: 'test@gmail.com',
-              // address: 'Pune',
-              country: 'KE'
+              email: client.emailAddress
             },
             device_custom_fields: [
               {
@@ -73,15 +74,15 @@ export const addDevice = async (context: HookContext) => {
             // update nuovo lock dates
 
             new NuovoApi()
-              .scheduleDeviceLock([clientDevice.id], installment.dueDate)
+              .scheduleDeviceLock([clientDevice.id], util.dateToMidnight(installment.dueDate))
               .then(() => {
                 // update local device
                 app
                   .service('device')
                   ._patch(response.id, {
                     lockDateSynced: true,
-                    initialLockDate: new Date(installment.dueDate),
-                    nextLockDate: new Date(installment.dueDate)
+                    initialLockDate: util.dateToMidnight(installment.dueDate),
+                    nextLockDate: util.dateToMidnight(installment.dueDate)
                   })
                   .catch((error) => {
                     logger.error(
@@ -105,8 +106,6 @@ export const addDevice = async (context: HookContext) => {
                 const nuvoDate = clientDevice.last_connected_at.split('-')
 
                 const newDate = `${nuvoDate[1]}-${nuvoDate[0]}-${nuvoDate[2]}`
-
-                console.log(newDate)
 
                 const pathData = {
                   customInformation: [
@@ -147,11 +146,11 @@ export const addDevice = async (context: HookContext) => {
                     },
                     {
                       customFieldID: 'CN_010', // Customer Name
-                      value: clientDevice.customer_name || 'Not Recorded'
+                      value: client.fullName || 'Not Recorded'
                     },
                     {
                       customFieldID: 'DN_013', // Device Name
-                      value: clientDevice.name || 'Not Recorded'
+                      value: clientDevice.make + ' ' + clientDevice.model || 'Not Recorded'
                     },
                     {
                       customFieldID: 'Lastconnected', // Device Name
