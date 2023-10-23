@@ -17,6 +17,9 @@ export const clientHook = async (context: HookContext) => {
     throw new GeneralError('Client has already been registered')
   }
 
+  console.log(data);
+  
+
   //
   context.additionalData = {
     imei: data.imei,

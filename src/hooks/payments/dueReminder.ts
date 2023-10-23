@@ -13,19 +13,14 @@ export class DueReminder {
 
   getDeviceDueInOneDay() {
     const dateFrom = new Date()
-    dateFrom.setHours(0)
-    dateFrom.setMinutes(0)
-    dateFrom.setSeconds(0)
-    dateFrom.setMilliseconds(0)
+    dateFrom.setDate(dateFrom.getDay() + 1)
+
     const from = util.formatDate(dateFrom, 'yyyy-MM-dd hh:mm:ss')
     console.log(from)
 
     const endDate = new Date()
-    endDate.setDate(endDate.getDate() + 3)
-    endDate.setHours(23)
-    endDate.setMinutes(59)
-    endDate.setSeconds(59)
-    endDate.setMilliseconds(0)
+    endDate.setDate(dateFrom.getDay() + 1)
+    endDate.setHours(23, 59, 59, 0)
 
     const dateTo = util.formatDate(endDate, 'yyyy-MM-dd hh:mm:ss')
     console.log(dateTo)
@@ -265,11 +260,11 @@ export class DueReminder {
           .service('device')
           ._patch(device.id, {
             lockDateSynced: true,
-            initialLockDate: new Date(data.nextLockDate),
-            nextLockDate: new Date(data.nextLockDate),
+            initialLockDate: data.nextLockDate,
+            nextLockDate: data.nextLockDate,
             locked: locked,
             scheduleNumber: data.number,
-            lockReadyScheduleAt: new Date(data.nextLockDate)
+            lockReadyScheduleAt: data.nextLockDate
           })
           .catch((error) => {
             logger.error(

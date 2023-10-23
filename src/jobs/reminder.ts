@@ -6,7 +6,7 @@ import util from '../utils'
 const schedule = require('node-schedule')
 
 export const reminderJob = (app: Application) => {
-  const job = schedule.scheduleJob('*/2 * * * *', async function () {
+  const job = schedule.scheduleJob('*/4 * * * *', async function () {
     console.log('REMINDER SCHEDULER:RUNNING')
     try {
       const duerClass = new DueReminder(app)
@@ -33,10 +33,12 @@ export const reminderJob = (app: Application) => {
       // check mambu (Sanity checks) -- if client has already paid
 
       const endDay = new Date()
-      endDay.setMilliseconds(0)
-      endDay.setMinutes(59)
-      endDay.setHours(23)
-      endDay.setSeconds(59)
+
+      if (devicesDue.length) {
+        console.log('REMINDER DEVICES FOUND: ',+devicesDue.length)
+      } else {
+        return
+      }
 
       devicesDue.forEach((device) => {
         duerClass.installmentPaid(device.loan.accountId, device).then((response) => {

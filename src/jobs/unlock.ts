@@ -4,11 +4,11 @@ import { LockDevice } from '../hooks/payments/lock'
 import reminder from '../hooks/payments/reminder'
 import { logger } from '../logger'
 
-const schedule = require('node-schedule')
+const ulockSchedule = require('node-schedule')
 
 export const unlockJob = (app: Application) => {
   //RUNS EVERY TWO MINS
-  const job = schedule.scheduleJob('*/2 * * * *', async function () {
+  ulockSchedule.scheduleJob('*/2 * * * *', async function () {
     console.log('UN:LOCK SCHEDULER RUNNNING')
     try {
       const lockClass = new LockDevice(app)
@@ -16,21 +16,23 @@ export const unlockJob = (app: Application) => {
 
       let devices = await lockClass.fetchLockedDevices()
 
-      if (!devices.length) return
+      if (!devices.length) {
+        return
+      } else {
+        logger.info('DEVICE UNLOCKED FOUND')
+        console.log('---------------')
+        console.log(devices.length)
+      }
 
       // check repaymentt
       const endDay = new Date()
-      endDay.setMilliseconds(0)
-      endDay.setMinutes(59)
-      endDay.setHours(23)
-      endDay.setSeconds(59)
 
-      devices.forEach((device) => {
+      for (let device of devices) {
         duerClass.installmentPaid(device.loan.accountId, device).then((response) => {
-          console.log('HERE=========================')
-          console.log('HERE=========================')
-
           if (response.nextLockDate) {
+            console.log('HERE=========================')
+            console.log(device)
+            console.log('HERE=========================')
             //update loan
             reminder.updateLoan(app, device.loan, {
               mambuSyncedAt: endDay,
@@ -41,7 +43,7 @@ export const unlockJob = (app: Application) => {
             })
 
             // update lock schedule
-            duerClass.setLockDate(app, device, response)
+            duerClass.setLockDate(app, device, response, false)
 
             // record history
             app.service('device-lock-history').create({
@@ -53,7 +55,7 @@ export const unlockJob = (app: Application) => {
             })
           }
         })
-      })
+      }
     } catch (error) {
       console.log(error)
     }
