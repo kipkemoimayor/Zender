@@ -25,4 +25,5 @@ export interface Iutil {
   formatDate: (date: Date, format: string) => string
   addDateTimeZone: (date: any) => string
   dateToMidnight: (date: any) => any
+  daysBetween: (dateOne:any,dateTwo:any)=>number
 }

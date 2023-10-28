@@ -13,13 +13,13 @@ export class DueReminder {
 
   getDeviceDueInOneDay() {
     const dateFrom = new Date()
-    dateFrom.setDate(dateFrom.getDay() + 1)
+    dateFrom.setDate(dateFrom.getDate() + 1)
 
     const from = util.formatDate(dateFrom, 'yyyy-MM-dd hh:mm:ss')
     console.log(from)
 
     const endDate = new Date()
-    endDate.setDate(dateFrom.getDay() + 1)
+    endDate.setDate(dateFrom.getDate() + 1)
     endDate.setHours(23, 59, 59, 0)
 
     const dateTo = util.formatDate(endDate, 'yyyy-MM-dd hh:mm:ss')
