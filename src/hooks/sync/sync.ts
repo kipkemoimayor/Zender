@@ -343,8 +343,8 @@ const syncData: Sync = {
           .service('device')
           ._patch(device.id, {
             lockDateSynced: true,
-            initialLockDate: new Date(installment.dueDate),
-            nextLockDate: new Date(installment.dueDate)
+            initialLockDate:util.dateToMidnight(installment.dueDate),
+            nextLockDate: util.dateToMidnight(installment.dueDate)
           })
           .catch((error) => {
             logger.error(

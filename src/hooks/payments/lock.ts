@@ -13,7 +13,8 @@ export class LockDevice {
         locked: false,
         nextLockDate: {
           $lte: util.formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss')
-        }
+        },
+        status: 'ACTIVE'
       },
       paginate: false
     })
@@ -22,7 +23,8 @@ export class LockDevice {
   fetchLockedDevices() {
     return this.app.service('device').find({
       query: {
-        locked: true
+        locked: true,
+        status: 'ACTIVE'
       },
       paginate: false
     })
