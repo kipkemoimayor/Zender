@@ -2,7 +2,7 @@
   "host": "localhost",
   "port": 3030,
   "public": "./public/views",
-  "xml":"./public/dev.xml",
+  "xml": "./public/dev.xml",
   "origins": [
     "http://localhost:3030"
   ],
@@ -12,11 +12,38 @@
   },
   "mysql": {
     "client": "mysql",
-    "host":"localhost",
-    "timezone":"+3:00",
-    "port":3306
+    "host": "localhost",
+    "timezone": "+3:00",
+    "port": 3306
   },
-  "users":{
+  "users": {
     "8a93865988bb58880188bdf7eaaf0122": "admin"
+  },
+  "authentication": {
+    "entity": "user",
+    "service": "users",
+    "secret": "2IZq1CWMrrqo1zMGkWII81fymQp/aCOR",
+    "authStrategies": [
+      "jwt",
+      "local"
+    ],
+    "jwtOptions": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "algorithm": "HS256",
+      "expiresIn": "60d"
+    },
+    "local": {
+      "usernameField": "email",
+      "passwordField": "password"
+    },
+    "oauth": {
+      "auth0": {
+        "key": "<Client ID>",
+        "secret": "<Client secret>"
+      }
+    }
   }
 }

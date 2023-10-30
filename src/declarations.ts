@@ -3,6 +3,8 @@ import { HookContext as FeathersHookContext, NextFunction } from '@feathersjs/fe
 import { Application as FeathersApplication } from '@feathersjs/express'
 import { ApplicationConfiguration } from './configuration'
 
+import { User } from './services/users/users'
+
 export { NextFunction }
 
 // The types for app.get(name) and app.set(name)
@@ -22,5 +24,12 @@ export type HookContext<S = any> = FeathersHookContext<Application, S>
 declare module '@feathersjs/feathers' {
   interface ContextOPtions {
     contextData?: any
+  }
+}
+
+// Add the user as an optional property to all params
+declare module '@feathersjs/feathers' {
+  interface Params {
+    user?: User
   }
 }
