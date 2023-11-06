@@ -16,6 +16,7 @@ export const mysql = (app: Application) => {
   // config.timzone = 'UTC+03:00'
 
   const db = knex({
+    // log: true,
     ...config
   })
 

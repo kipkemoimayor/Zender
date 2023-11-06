@@ -57,9 +57,7 @@ export const reminderJob = (app: Application) => {
             // update lock schedule
             const days = util.daysBetween(response.nextLockDate, new Date())
             console.log(days)
-            if (days > 1) {
-              duerClass.setLockDate(app, device, response)
-            } else {
+            if (days == 1) {
               duerClass.setReminders(app, device)
             }
           } else {

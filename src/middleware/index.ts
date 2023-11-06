@@ -22,6 +22,7 @@ const middleware = {
         console.log(createHash(encodedString))
         createSessionFile(mambuSignedRequest)
         req.requestIsValid = true
+        req.requestToken = encodedString;
         req.method = 'GET'
         console.log('here:again')
         next()

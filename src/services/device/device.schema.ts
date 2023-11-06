@@ -82,7 +82,11 @@ export const devicePatchSchema = Type.Partial(deviceSchema, {
 })
 export type DevicePatch = Static<typeof devicePatchSchema>
 export const devicePatchValidator = getValidator(devicePatchSchema, dataValidator)
-export const devicePatchResolver = resolve<Device, HookContext>({})
+export const devicePatchResolver = resolve<Device, HookContext>({
+  updatedAt: async (device, context) => {
+    return new Date() as any
+  }
+})
 
 // Schema for allowed query properties
 export const deviceQueryProperties = Type.Pick(deviceSchema, [
@@ -110,7 +114,7 @@ export const deviceQuerySchema = Type.Intersect(
         $or: Type.Optional(Type.Any()),
         $limit: Type.Optional(Type.Any()),
         $select: Type.Optional(Type.Any()),
-        getStats:Type.Optional(Type.Any()),
+        getStats: Type.Optional(Type.Any())
       },
       { additionalProperties: false }
     )

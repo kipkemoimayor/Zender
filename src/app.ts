@@ -30,8 +30,10 @@ import util from './utils'
 import { lockJob } from './jobs/lock'
 import { unlockJob } from './jobs/unlock'
 import { smsJob } from './jobs/sendSMS'
+import { Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors'
 
 process.env.TZ = 'Africa/Nairobi'
+const session: any = {}
 const app: Application = express(feathers())
 
 // Load app configuration
@@ -43,11 +45,36 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 // auth
 app.use('/api', middleware.validateEntry)
-app.use('/api', serveStatic(app.get('public')))
 app.use('/app-definition', serveStatic('./public/dev.xml'))
 
 // Host the public folder
 app.use('/docs', serveStatic('./public/templates/'))
+
+app.use(
+  '/api',
+  function (req: any, res, next) {
+    console.log(req.url)
+    //generate token valid for 30 seconds using token id
+    if (req.requestIsValid) {
+      let expiry = new Date().getTime()
+      expiry += 1000 * 2
+      session[req.requestToken] = { expiresIn: expiry }
+    }
+    const mambuUser = JSON.parse(util.readSession() || JSON.stringify({ session: '' })).session
+    const sess = session[mambuUser.split('.')[1]]
+    const mambuUserSession = req.header('mambuUser')
+    if (sess || mambuUserSession) {
+      if (sess.expiresIn > new Date().getTime() || mambuUserSession) {
+        next()
+      } else {
+        throw new NotFound()
+      }
+    } else {
+      throw new NotFound()
+    }
+  },
+  serveStatic(app.get('public'))
+)
 
 // Configure services and real-time functionality
 app.configure(rest())

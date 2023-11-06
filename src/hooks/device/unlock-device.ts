@@ -38,6 +38,14 @@ export const handleRepyamentHook = async (context: HookContext) => {
 
             // update lock schedule
             duerClass.setLockDate(app, device, response, locked)
+            // set lock history
+            app.service('device-lock-history').create({
+              deviceId: device.id,
+              reason: 'REPAYMENT',
+              loanId: device.loan.id,
+              type: 2,
+              unlockedAt: new Date()
+            })
           }
         })
       })
