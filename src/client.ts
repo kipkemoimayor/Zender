@@ -4,6 +4,9 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { ipListClient } from './services/ip-list/ip-list.shared'
+export type { IpList, IpListData, IpListQuery, IpListPatch } from './services/ip-list/ip-list.shared'
+
 import { userClient } from './services/users/users.shared'
 export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared'
 
@@ -114,5 +117,6 @@ export const createClient = <Configuration = any,>(
   client.configure(numbersClient)
   client.configure(numbersClient)
   client.configure(userClient)
+  client.configure(ipListClient)
   return client
 }

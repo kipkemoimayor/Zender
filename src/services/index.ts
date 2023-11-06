@@ -1,3 +1,4 @@
+import { ipList } from './ip-list/ip-list'
 import { user } from './users/users'
 import { numbers } from './numbers/numbers'
 import { disbursment } from './disbursment/disbursment'
@@ -14,6 +15,7 @@ import { loanDetails } from './clients/loan-details'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(ipList)
   app.configure(user)
   app.configure(numbers)
   app.configure(disbursment)

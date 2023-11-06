@@ -70,6 +70,8 @@ app.use(
     const mambuUserSession = req.header('mambuUser')
     if (sess || mambuUserSession) {
       if (sess.expiresIn > new Date().getTime() || mambuUserSession) {
+        // save token
+        util.createToken(process?.env?.SESSION_TOKEN || '')
         next()
       } else {
         throw new NotFound()

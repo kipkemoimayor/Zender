@@ -25,6 +25,7 @@ import { discardData } from '../../hooks/dicardData'
 import { formatQuery } from '../../hooks/format-query'
 import { mambuAuth } from '../../hooks/auth/mambuAuth'
 import { AuthHook } from '../../hooks/auth/auth'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './loan-details.class'
 export * from './loan-details.schema'
@@ -42,7 +43,8 @@ export const loanDetails = (app: Application) => {
   app.service(loanDetailsPath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
+        ipAuthHook,
+        authenticate('jwt'),
         schemaHooks.resolveExternal(loanDetailsExternalResolver),
         schemaHooks.resolveResult(loanDetailsResolver)
       ]
