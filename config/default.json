@@ -4,7 +4,7 @@
   "public": "./public/views",
   "xml": "./public/dev.xml",
   "origins": [
-    "http://localhost:5173"
+    "http://localhost:5173","https://lgfdeposit.spectrumcreditltd.com/easyphone-dev/api/"
   ],
   "paginate": {
     "default": 10,
