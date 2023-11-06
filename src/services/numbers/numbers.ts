@@ -19,6 +19,7 @@ import { numbersPath, numbersMethods } from './numbers.shared'
 import { statiscticsHook } from '../../hooks/numbers'
 import { authenticate } from '@feathersjs/authentication'
 import { ipAuthHook } from '../../hooks/auth/ipFilter'
+import { iff, isProvider } from 'feathers-hooks-common'
 
 export * from './numbers.class'
 export * from './numbers.schema'
@@ -35,20 +36,23 @@ export const numbers = (app: Application) => {
   // Initialize hooks
   app.service(numbersPath).hooks({
     around: {
-      all: [
-        ipAuthHook,
-        authenticate('jwt'),
-        schemaHooks.resolveExternal(numbersExternalResolver),
-        schemaHooks.resolveResult(numbersResolver)
-      ]
+      all: [schemaHooks.resolveExternal(numbersExternalResolver), schemaHooks.resolveResult(numbersResolver)]
     },
     before: {
       all: [schemaHooks.validateQuery(numbersQueryValidator), schemaHooks.resolveQuery(numbersQueryResolver)],
-      find: [],
-      get: [],
-      create: [schemaHooks.validateData(numbersDataValidator), schemaHooks.resolveData(numbersDataResolver)],
-      patch: [schemaHooks.validateData(numbersPatchValidator), schemaHooks.resolveData(numbersPatchResolver)],
-      remove: []
+      find: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      create: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(numbersDataValidator),
+        schemaHooks.resolveData(numbersDataResolver)
+      ],
+      patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(numbersPatchValidator),
+        schemaHooks.resolveData(numbersPatchResolver)
+      ],
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: []

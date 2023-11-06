@@ -38,8 +38,6 @@ export const deviceLockHistory = (app: Application) => {
   app.service(deviceLockHistoryPath).hooks({
     around: {
       all: [
-        ipAuthHook,
-        authenticate('jwt'),
         schemaHooks.resolveExternal(deviceLockHistoryExternalResolver),
         schemaHooks.resolveResult(deviceLockHistoryResolver),
         schemaHooks.resolveResult(lockHistoryResultResolver)
@@ -51,6 +49,7 @@ export const deviceLockHistory = (app: Application) => {
         schemaHooks.resolveQuery(deviceLockHistoryQueryResolver)
       ],
       find: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         iff(
           isProvider('external'),
           (context) => {
@@ -60,16 +59,18 @@ export const deviceLockHistory = (app: Application) => {
           mambuAuth
         )
       ],
-      get: [],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
       create: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         schemaHooks.validateData(deviceLockHistoryDataValidator),
         schemaHooks.resolveData(deviceLockHistoryDataResolver)
       ],
       patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         schemaHooks.validateData(deviceLockHistoryPatchValidator),
         schemaHooks.resolveData(deviceLockHistoryPatchResolver)
       ],
-      remove: []
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: []

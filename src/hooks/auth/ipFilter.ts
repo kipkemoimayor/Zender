@@ -1,14 +1,14 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/hook.html
 import { NotAuthenticated } from '@feathersjs/errors'
-import type { HookContext, NextFunction } from '../../declarations'
+import type { HookContext } from '../../declarations'
 
-export const ipAuthHook = async (context: HookContext, next: NextFunction) => {
+export const ipAuthHook = async (context: HookContext) => {
   console.log(`Running hook ip filter hook on ${context.path}.${context.method}`)
   const { params, app } = context
 
   console.log(context.params.provider)
 
-  if (context.params.provider !== 'server') {
+  if (context.params.provider == 'rest' || context.params.provider == 'external') {
     const headers = params.headers
 
     console.log('=============')
@@ -37,8 +37,6 @@ export const ipAuthHook = async (context: HookContext, next: NextFunction) => {
       if (allowedIp.total === 0) {
         throw new NotAuthenticated('IP not allowed, Kindly request to be whitelisted')
       }
-
-      await next()
     } catch (error: any) {
       throw new NotAuthenticated(error?.message)
     }

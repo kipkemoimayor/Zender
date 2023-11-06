@@ -18,6 +18,7 @@ import type { Application } from '../../declarations'
 import { SentSmsService, getOptions } from './sent-sms.class'
 import { sentSmsPath, sentSmsMethods } from './sent-sms.shared'
 import { ipAuthHook } from '../../hooks/auth/ipFilter'
+import { iff, isProvider } from 'feathers-hooks-common'
 
 export * from './sent-sms.class'
 export * from './sent-sms.schema'
@@ -34,20 +35,23 @@ export const sentSms = (app: Application) => {
   // Initialize hooks
   app.service(sentSmsPath).hooks({
     around: {
-      all: [
-        ipAuthHook,
-        authenticate('jwt'),
-        schemaHooks.resolveExternal(sentSmsExternalResolver),
-        schemaHooks.resolveResult(sentSmsResolver)
-      ]
+      all: [schemaHooks.resolveExternal(sentSmsExternalResolver), schemaHooks.resolveResult(sentSmsResolver)]
     },
     before: {
       all: [schemaHooks.validateQuery(sentSmsQueryValidator), schemaHooks.resolveQuery(sentSmsQueryResolver)],
-      find: [],
-      get: [],
-      create: [schemaHooks.validateData(sentSmsDataValidator), schemaHooks.resolveData(sentSmsDataResolver)],
-      patch: [schemaHooks.validateData(sentSmsPatchValidator), schemaHooks.resolveData(sentSmsPatchResolver)],
-      remove: []
+      find: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      create: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(sentSmsDataValidator),
+        schemaHooks.resolveData(sentSmsDataResolver)
+      ],
+      patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(sentSmsPatchValidator),
+        schemaHooks.resolveData(sentSmsPatchResolver)
+      ],
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: []

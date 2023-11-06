@@ -19,6 +19,7 @@ import { LoanService, getOptions } from './loan.class'
 import { loanPath, loanMethods } from './loan.shared'
 import { addDevice } from '../../hooks/device/add-device'
 import { ipAuthHook } from '../../hooks/auth/ipFilter'
+import { iff, isProvider } from 'feathers-hooks-common'
 
 export * from './loan.class'
 export * from './loan.schema'
@@ -35,20 +36,27 @@ export const loan = (app: Application) => {
   // Initialize hooks
   app.service(loanPath).hooks({
     around: {
-      all: [
-        ipAuthHook,
-        authenticate('jwt'),
-        schemaHooks.resolveExternal(loanExternalResolver),
-        schemaHooks.resolveResult(loanResolver)
-      ]
+      all: [schemaHooks.resolveExternal(loanExternalResolver), schemaHooks.resolveResult(loanResolver)]
     },
     before: {
-      all: [schemaHooks.validateQuery(loanQueryValidator), schemaHooks.resolveQuery(loanQueryResolver)],
-      find: [],
-      get: [],
-      create: [schemaHooks.validateData(loanDataValidator), schemaHooks.resolveData(loanDataResolver)],
-      patch: [schemaHooks.validateData(loanPatchValidator), schemaHooks.resolveData(loanPatchResolver)],
-      remove: []
+      all: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateQuery(loanQueryValidator),
+        schemaHooks.resolveQuery(loanQueryResolver)
+      ],
+      find: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      create: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(loanDataValidator),
+        schemaHooks.resolveData(loanDataResolver)
+      ],
+      patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(loanPatchValidator),
+        schemaHooks.resolveData(loanPatchResolver)
+      ],
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: [],

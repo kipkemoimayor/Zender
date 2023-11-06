@@ -18,6 +18,7 @@ import type { Application } from '../../declarations'
 import { SmsQueueService, getOptions } from './sms-queue.class'
 import { smsQueuePath, smsQueueMethods } from './sms-queue.shared'
 import { ipAuthHook } from '../../hooks/auth/ipFilter'
+import { iff, isProvider } from 'feathers-hooks-common'
 
 export * from './sms-queue.class'
 export * from './sms-queue.schema'
@@ -35,8 +36,6 @@ export const smsQueue = (app: Application) => {
   app.service(smsQueuePath).hooks({
     around: {
       all: [
-        ipAuthHook,
-        authenticate('jwt'),
         schemaHooks.resolveExternal(smsQueueExternalResolver),
         schemaHooks.resolveResult(smsQueueResolver)
       ]
@@ -46,17 +45,21 @@ export const smsQueue = (app: Application) => {
         schemaHooks.validateQuery(smsQueueQueryValidator),
         schemaHooks.resolveQuery(smsQueueQueryResolver)
       ],
-      find: [],
-      get: [],
+      find: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
       create: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+
         schemaHooks.validateData(smsQueueDataValidator),
         schemaHooks.resolveData(smsQueueDataResolver)
       ],
       patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+
         schemaHooks.validateData(smsQueuePatchValidator),
         schemaHooks.resolveData(smsQueuePatchResolver)
       ],
-      remove: []
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: []

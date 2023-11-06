@@ -38,8 +38,6 @@ export const reminder = (app: Application) => {
   app.service(reminderPath).hooks({
     around: {
       all: [
-        ipAuthHook,
-        authenticate('jwt'),
         schemaHooks.resolveExternal(reminderExternalResolver),
         schemaHooks.resolveResult(reminderResolver),
         schemaHooks.resolveResult(reminderResultResolver)
@@ -51,6 +49,7 @@ export const reminder = (app: Application) => {
         schemaHooks.resolveQuery(reminderQueryResolver)
       ],
       find: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         iff(
           isProvider('external'),
           (context) => {
@@ -60,16 +59,18 @@ export const reminder = (app: Application) => {
           mambuAuth
         )
       ],
-      get: [],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
       create: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         schemaHooks.validateData(reminderDataValidator),
         schemaHooks.resolveData(reminderDataResolver)
       ],
       patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         schemaHooks.validateData(reminderPatchValidator),
         schemaHooks.resolveData(reminderPatchResolver)
       ],
-      remove: []
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: []

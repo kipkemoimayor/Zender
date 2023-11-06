@@ -40,8 +40,6 @@ export const device = (app: Application) => {
   app.service(devicePath).hooks({
     around: {
       all: [
-        ipAuthHook,
-        authenticate('jwt'),
         schemaHooks.resolveExternal(deviceExternalResolver),
         schemaHooks.resolveResult(deviceResolver),
         schemaHooks.resolveResult(deviceResultResolver)
@@ -54,6 +52,7 @@ export const device = (app: Application) => {
         schemaHooks.resolveQuery(deviceQueryResolver)
       ],
       find: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         iff(
           isProvider('external'),
           (context) => {
@@ -68,10 +67,18 @@ export const device = (app: Application) => {
           statiscticsHook
         )
       ],
-      get: [],
-      create: [schemaHooks.validateData(deviceDataValidator), schemaHooks.resolveData(deviceDataResolver)],
-      patch: [schemaHooks.validateData(devicePatchValidator), schemaHooks.resolveData(devicePatchResolver)],
-      remove: []
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      create: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(deviceDataValidator),
+        schemaHooks.resolveData(deviceDataResolver)
+      ],
+      patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
+        schemaHooks.validateData(devicePatchValidator),
+        schemaHooks.resolveData(devicePatchResolver)
+      ],
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: [],

@@ -43,8 +43,6 @@ export const loanDetails = (app: Application) => {
   app.service(loanDetailsPath).hooks({
     around: {
       all: [
-        ipAuthHook,
-        authenticate('jwt'),
         schemaHooks.resolveExternal(loanDetailsExternalResolver),
         schemaHooks.resolveResult(loanDetailsResolver)
       ]
@@ -57,6 +55,7 @@ export const loanDetails = (app: Application) => {
       ],
       find: [
         // query
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         iff(
           isProvider('external'),
           (context) => {
@@ -66,7 +65,7 @@ export const loanDetails = (app: Application) => {
           mambuAuth
         )
       ],
-      get: [],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
       create: [
         AuthHook,
         schemaHooks.validateData(loanDetailsDataValidator),
@@ -75,10 +74,11 @@ export const loanDetails = (app: Application) => {
         discardData
       ],
       patch: [
+        iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         schemaHooks.validateData(loanDetailsPatchValidator),
         schemaHooks.resolveData(loanDetailsPatchResolver)
       ],
-      remove: []
+      remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
       all: [],
