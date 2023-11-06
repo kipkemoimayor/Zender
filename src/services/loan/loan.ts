@@ -18,6 +18,7 @@ import type { Application } from '../../declarations'
 import { LoanService, getOptions } from './loan.class'
 import { loanPath, loanMethods } from './loan.shared'
 import { addDevice } from '../../hooks/device/add-device'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './loan.class'
 export * from './loan.schema'
@@ -35,7 +36,8 @@ export const loan = (app: Application) => {
   app.service(loanPath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
+        ipAuthHook,
+        authenticate('jwt'),
         schemaHooks.resolveExternal(loanExternalResolver),
         schemaHooks.resolveResult(loanResolver)
       ]

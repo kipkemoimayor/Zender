@@ -2,7 +2,6 @@
 import { authenticate } from '@feathersjs/authentication'
 import { iff, isProvider } from 'feathers-hooks-common'
 
-
 import { hooks as schemaHooks } from '@feathersjs/schema'
 
 import {
@@ -21,6 +20,7 @@ import type { Application } from '../../declarations'
 import { DeviceLockHistoryService, getOptions } from './device-lock-history.class'
 import { deviceLockHistoryPath, deviceLockHistoryMethods } from './device-lock-history.shared'
 import { mambuAuth } from '../../hooks/auth/mambuAuth'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './device-lock-history.class'
 export * from './device-lock-history.schema'
@@ -38,7 +38,8 @@ export const deviceLockHistory = (app: Application) => {
   app.service(deviceLockHistoryPath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
+        ipAuthHook,
+        authenticate('jwt'),
         schemaHooks.resolveExternal(deviceLockHistoryExternalResolver),
         schemaHooks.resolveResult(deviceLockHistoryResolver),
         schemaHooks.resolveResult(lockHistoryResultResolver)

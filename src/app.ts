@@ -68,11 +68,18 @@ app.use(
     const mambuUser = JSON.parse(util.readSession() || JSON.stringify({ session: '' })).session
     const sess = session[mambuUser.split('.')[1]]
     const mambuUserSession = req.header('mambuUser')
+    console.log(mambuUserSession)
+    console.log(sess)
+
     if (sess || mambuUserSession) {
       if (sess.expiresIn > new Date().getTime() || mambuUserSession) {
         // save token
-        util.createToken(process?.env?.SESSION_TOKEN || '')
-        next()
+        try {
+          util.createToken(process?.env?.SESSION_TOKEN || '')
+        } catch (error) {
+          console.log(error)
+        }
+        return next()
       } else {
         throw new NotFound()
       }

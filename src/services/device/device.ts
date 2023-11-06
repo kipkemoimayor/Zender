@@ -22,6 +22,7 @@ import { devicePath, deviceMethods } from './device.shared'
 import { formatQuery } from '../../hooks/format-query'
 import { mambuAuth } from '../../hooks/auth/mambuAuth'
 import { statiscticsHook } from '../../hooks/numbers'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './device.class'
 export * from './device.schema'
@@ -39,6 +40,7 @@ export const device = (app: Application) => {
   app.service(devicePath).hooks({
     around: {
       all: [
+        ipAuthHook,
         authenticate('jwt'),
         schemaHooks.resolveExternal(deviceExternalResolver),
         schemaHooks.resolveResult(deviceResolver),

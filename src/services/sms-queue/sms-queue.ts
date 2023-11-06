@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { SmsQueueService, getOptions } from './sms-queue.class'
 import { smsQueuePath, smsQueueMethods } from './sms-queue.shared'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './sms-queue.class'
 export * from './sms-queue.schema'
@@ -34,7 +35,8 @@ export const smsQueue = (app: Application) => {
   app.service(smsQueuePath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
+        ipAuthHook,
+        authenticate('jwt'),
         schemaHooks.resolveExternal(smsQueueExternalResolver),
         schemaHooks.resolveResult(smsQueueResolver)
       ]

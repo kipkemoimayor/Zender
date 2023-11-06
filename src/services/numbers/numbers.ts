@@ -17,6 +17,8 @@ import type { Application } from '../../declarations'
 import { NumbersService, getOptions } from './numbers.class'
 import { numbersPath, numbersMethods } from './numbers.shared'
 import { statiscticsHook } from '../../hooks/numbers'
+import { authenticate } from '@feathersjs/authentication'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './numbers.class'
 export * from './numbers.schema'
@@ -33,7 +35,12 @@ export const numbers = (app: Application) => {
   // Initialize hooks
   app.service(numbersPath).hooks({
     around: {
-      all: [schemaHooks.resolveExternal(numbersExternalResolver), schemaHooks.resolveResult(numbersResolver)]
+      all: [
+        ipAuthHook,
+        authenticate('jwt'),
+        schemaHooks.resolveExternal(numbersExternalResolver),
+        schemaHooks.resolveResult(numbersResolver)
+      ]
     },
     before: {
       all: [schemaHooks.validateQuery(numbersQueryValidator), schemaHooks.resolveQuery(numbersQueryResolver)],

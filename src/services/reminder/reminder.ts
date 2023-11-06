@@ -2,7 +2,6 @@
 import { authenticate } from '@feathersjs/authentication'
 import { iff, isProvider } from 'feathers-hooks-common'
 
-
 import { hooks as schemaHooks } from '@feathersjs/schema'
 
 import {
@@ -21,6 +20,7 @@ import type { Application } from '../../declarations'
 import { ReminderService, getOptions } from './reminder.class'
 import { reminderPath, reminderMethods } from './reminder.shared'
 import { mambuAuth } from '../../hooks/auth/mambuAuth'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './reminder.class'
 export * from './reminder.schema'
@@ -38,7 +38,8 @@ export const reminder = (app: Application) => {
   app.service(reminderPath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
+        ipAuthHook,
+        authenticate('jwt'),
         schemaHooks.resolveExternal(reminderExternalResolver),
         schemaHooks.resolveResult(reminderResolver),
         schemaHooks.resolveResult(reminderResultResolver)

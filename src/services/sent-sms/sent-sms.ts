@@ -17,6 +17,7 @@ import {
 import type { Application } from '../../declarations'
 import { SentSmsService, getOptions } from './sent-sms.class'
 import { sentSmsPath, sentSmsMethods } from './sent-sms.shared'
+import { ipAuthHook } from '../../hooks/auth/ipFilter'
 
 export * from './sent-sms.class'
 export * from './sent-sms.schema'
@@ -34,7 +35,8 @@ export const sentSms = (app: Application) => {
   app.service(sentSmsPath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
+        ipAuthHook,
+        authenticate('jwt'),
         schemaHooks.resolveExternal(sentSmsExternalResolver),
         schemaHooks.resolveResult(sentSmsResolver)
       ]
