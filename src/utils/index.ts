@@ -97,6 +97,18 @@ const util: Iutil = {
       console.log(error)
     }
   },
+  createToken: function (data) {
+    const file = `
+      function saveSession (val){
+        localStorage.setItem('mambuUserToken', val);
+      }
+      saveSession("${data}")`
+    try {
+      fs.writeFileSync(path.join(__dirname, '../../public/views/assets/tokenSession.js'), file)
+    } catch (error) {
+      console.log(error)
+    }
+  },
   readSession: function () {
     const file = fs.readFileSync(path.join(__dirname, `../../public/resources/userSession.json`), {
       encoding: 'utf-8'

@@ -39,7 +39,11 @@ const app: Application = express(feathers())
 
 // Load app configuration
 app.configure(configuration(configurationValidator))
-app.use(cors())
+app.use(
+  cors({
+    origin: app.get('origins')
+  })
+)
 app.use(json())
 app.use(urlencoded({ extended: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -114,19 +118,19 @@ app.hooks({
   teardown: []
 })
 
-syncJob(app)
+// syncJob(app)
 
 // // Handle payment and schedules
 // paymentJob(app)
 
 // reminder job
 
-reminderJob(app)
+// reminderJob(app)
 
-lockJob(app)
+// lockJob(app)
 
-unlockJob(app)
+// unlockJob(app)
 
-smsJob(app)
+// smsJob(app)
 
 export { app }

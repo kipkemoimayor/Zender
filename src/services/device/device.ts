@@ -39,7 +39,7 @@ export const device = (app: Application) => {
   app.service(devicePath).hooks({
     around: {
       all: [
-        // authenticate('jwt'),
+        authenticate('jwt'),
         schemaHooks.resolveExternal(deviceExternalResolver),
         schemaHooks.resolveResult(deviceResolver),
         schemaHooks.resolveResult(deviceResultResolver)
