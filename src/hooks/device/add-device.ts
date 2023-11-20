@@ -50,7 +50,7 @@ export const addDevice = async (context: HookContext) => {
         const clientNames = client.fullName.replace(/\s+/g, ' ').trim().split(' ')
         const customerData = {
           device: {
-            first_lock_date: installment.dueDate,
+            first_lock_date: util.dateToMidnight(installment.dueDate),
             name: '',
             user: {
               first_name: clientNames[0],

@@ -20,6 +20,44 @@ export class LockDevice {
     })
   }
 
+  fetchDevices(query?: any) {
+    const dateFrom = new Date()
+    dateFrom.setTime(dateFrom.getTime() - 1000 * 60 * 60)
+
+    const from = util.formatDate(dateFrom, 'yyyy-MM-dd hh:mm:ss')
+    console.log(from)
+
+    const endDate = new Date()
+    endDate.setTime(dateFrom.getTime() - 1000 * 60 * 60)
+
+    const dateTo = util.formatDate(endDate, 'yyyy-MM-dd hh:mm:ss')
+    console.log(dateTo)
+
+    return this.app.service('device').find({
+      query: {
+        $or: [
+          {
+            $and: [
+              // {
+              //   lastSyncedAt: {
+              //     $gte: from
+              //   }
+              // },
+              {
+                lastSyncedAt: {
+                  $lte: dateTo
+                }
+              }
+            ]
+          },
+          { lastSyncedAt: null as any }
+        ],
+        status: 'ACTIVE',
+        ...query
+      }
+    })
+  }
+
   fetchLockedDevices() {
     return this.app.service('device').find({
       query: {

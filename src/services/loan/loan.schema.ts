@@ -78,7 +78,7 @@ export const loanQuerySchema = Type.Intersect(
 export const loanResultResolver = resolve<Loan, HookContext>({
   client: virtual(async (device, context) => {
     // Populate the user associated via `userId`
-    return context.app.service('client')._get(device.clientId)
+    return context.app.service('client').get(device.clientId)
   })
 })
 export type LoanQuery = Static<typeof loanQuerySchema>

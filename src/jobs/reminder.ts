@@ -13,15 +13,17 @@ export const reminderJob = (app: Application) => {
 
       const reminderDevices = await duerClass.getDeviceDueInOneDay()
 
+      console.log('========================')
+      console.log(reminderDevices.length)
+      console.log('========================')
+
       //filter out already sent reminders
 
       const devicesDue = reminderDevices.filter((device) => {
         if (device.reminderSet) {
           if (
-            !(
-              util.formatDate(new Date(device.reminderSetDate), 'yyyy-MM-dd') ==
-              util.formatDate(new Date(), 'yyyy-MM-dd')
-            )
+            util.formatDate(new Date(device.reminderSetDate), 'yyyy-MM-dd') !=
+            util.formatDate(new Date(), 'yyyy-MM-dd')
           ) {
             return device
           }
@@ -42,8 +44,6 @@ export const reminderJob = (app: Application) => {
 
       devicesDue.forEach((device) => {
         duerClass.installmentPaid(device.loan.accountId, device).then((response) => {
-          console.log(response)
-
           if (response.nextLockDate) {
             //update loan
             reminder.updateLoan(app, device.loan, {
@@ -56,9 +56,13 @@ export const reminderJob = (app: Application) => {
 
             // update lock schedule
             const days = util.daysBetween(response.nextLockDate, new Date())
+            console.log('=================')
             console.log(days)
-            if (days == 1) {
+            console.log('=================')
+            if (days <= 1) {
               duerClass.setReminders(app, device)
+            } else {
+              // duerClass.setLockDate(app, device, response)
             }
           } else {
             // send reminders

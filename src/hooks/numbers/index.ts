@@ -17,5 +17,16 @@ export const statiscticsHook = async (context: HookContext) => {
     })
 
     context.result = deviceStats
+  } else if (context.getSalesPerMonth) {
+    const buildQuery = context.service.createQuery()
+    buildQuery.select('createdAt')
+    buildQuery.count('id as count')
+    buildQuery.groupByRaw('MONTH(createdAt)')
+
+    const deviceStats = await app.service('device')._find({
+      knex: buildQuery
+    })
+
+    context.result = deviceStats
   }
 }

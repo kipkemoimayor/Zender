@@ -30,12 +30,12 @@ export class DueReminder {
         $and: [
           {
             nextLockDate: {
-              $gt: from
+              $gte: from
             }
           },
           {
             nextLockDate: {
-              $lt: dateTo
+              $lte: dateTo
             }
           }
         ],
@@ -316,7 +316,7 @@ export class DueReminder {
       // update device initial lock date
       await new NuovoApi().updateCustomer(device.nuovoDeviceId, {
         device: {
-          first_lock_date: prevInstallment[0].dueDate
+          first_lock_date: util.dateToMidnight(prevInstallment[0].dueDate)
         }
       })
       await util.sleep(5000)

@@ -65,11 +65,11 @@ export const deviceLockHistoryQuerySchema = Type.Intersect(
 export const lockHistoryResultResolver = resolve<DeviceLockHistory, HookContext>({
   loan: virtual(async (device, context) => {
     // Populate the user associated via `userId`
-    return context.app.service('loan')._get(device.loanId)
+    return context.app.service('loan').get(device.loanId)
   }),
   device: virtual(async (device, context) => {
     // Populate the user associated via `userId`
-    return context.app.service('device')._get(device.deviceId)
+    return context.app.service('device').get(device.deviceId)
   })
 })
 export type DeviceLockHistoryQuery = Static<typeof deviceLockHistoryQuerySchema>

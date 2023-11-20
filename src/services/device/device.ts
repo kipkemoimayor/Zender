@@ -56,9 +56,15 @@ export const device = (app: Application) => {
         iff(
           isProvider('external'),
           (context) => {
-            if (context.params.query && context.params.query.getStats) {
-              context.getStats = true
+            if (
+              context.params.query &&
+              (context.params.query.getStats || context.params.query.getSalesPerMonth)
+            ) {
+              if (context.params.query.getStats) context.getStats = true
+              if (context.params.query.getSalesPerMonth) context.getSalesPerMonth = true
+
               delete context.params.query.getStats
+              delete context.params.query.getSalesPerMonth
             }
             context.ROLEACTION = 'canViewDevices'
             return context

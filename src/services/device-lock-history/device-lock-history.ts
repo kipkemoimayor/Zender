@@ -21,6 +21,7 @@ import { DeviceLockHistoryService, getOptions } from './device-lock-history.clas
 import { deviceLockHistoryPath, deviceLockHistoryMethods } from './device-lock-history.shared'
 import { mambuAuth } from '../../hooks/auth/mambuAuth'
 import { ipAuthHook } from '../../hooks/auth/ipFilter'
+import { formatQuery } from '../../hooks/format-query'
 
 export * from './device-lock-history.class'
 export * from './device-lock-history.schema'
@@ -45,6 +46,7 @@ export const deviceLockHistory = (app: Application) => {
     },
     before: {
       all: [
+        iff(isProvider('external'), formatQuery),
         schemaHooks.validateQuery(deviceLockHistoryQueryValidator),
         schemaHooks.resolveQuery(deviceLockHistoryQueryResolver)
       ],

@@ -32,6 +32,7 @@ import { lockJob } from './jobs/lock'
 import { unlockJob } from './jobs/unlock'
 import { smsJob } from './jobs/sendSMS'
 import { Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors'
+import { routineSycnData } from './jobs/lastConnectedSycn'
 
 process.env.TZ = 'Africa/Nairobi'
 const session: any = {}
@@ -127,18 +128,20 @@ app.hooks({
   teardown: []
 })
 
-syncJob(app)
+// syncJob(app)
 
 // // Handle payment and schedules
 
 // reminder job
 
-reminderJob(app)
+// reminderJob(app)
 
-lockJob(app)
+// lockJob(app)
 
-unlockJob(app)
+// unlockJob(app)
 
-smsJob(app)
+// smsJob(app)
+
+// routineSycnData(app)
 
 export { app }

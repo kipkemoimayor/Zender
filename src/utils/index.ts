@@ -317,7 +317,7 @@ const util: Iutil = {
     const differenceMs = Math.abs(date1 - date2)
 
     // Convert back to days and return
-    return Math.round(differenceMs / ONE_DAY)
+    return Math.floor(differenceMs / ONE_DAY)
   }
 }
 

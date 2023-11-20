@@ -67,4 +67,6 @@ export interface Sync {
   searchAndCreateDevice: (app: Application, loan: Loan) => void
 
   syncLockDates: (app: Application, device: Device) => void
+  routineSycn: (app: Application, device: Device) => void
+  proccessMambuPartialSycn: (app: Application, device: any, deviceId: number, loanAccountId: string) => void
 }

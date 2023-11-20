@@ -37,7 +37,8 @@ export const deviceSchema = Type.Object(
     lastConnectedAt: Type.Optional(Type.Any()),
     reminderSet: Type.Optional(Type.Boolean({ default: false })),
     reminderSetDate: Type.Optional(Type.Any()),
-    scheduleNumber: Type.Optional(Type.Integer())
+    scheduleNumber: Type.Optional(Type.Integer()),
+    lastSyncedAt: Type.Optional(Type.Any())
   },
   { $id: 'Device', additionalProperties: false }
 )
@@ -66,7 +67,8 @@ export const deviceDataSchema = Type.Pick(
     'nextLockDate',
     'initialLockDate',
     'lastConnectedAt',
-    'scheduleNumber'
+    'scheduleNumber',
+    'lastSyncedAt'
   ],
   {
     $id: 'DeviceData'
@@ -103,7 +105,8 @@ export const deviceQueryProperties = Type.Pick(deviceSchema, [
   'reminderSet',
   'reminderSetDate',
   'clientId',
-  'scheduleNumber'
+  'scheduleNumber',
+  'lastSyncedAt'
 ])
 export const deviceQuerySchema = Type.Intersect(
   [
@@ -114,7 +117,8 @@ export const deviceQuerySchema = Type.Intersect(
         $or: Type.Optional(Type.Any()),
         $limit: Type.Optional(Type.Any()),
         $select: Type.Optional(Type.Any()),
-        getStats: Type.Optional(Type.Any())
+        getStats: Type.Optional(Type.Any()),
+        getSalesPerMonth: Type.Optional(Type.Any())
       },
       { additionalProperties: false }
     )

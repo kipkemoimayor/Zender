@@ -343,7 +343,7 @@ const syncData: Sync = {
           .service('device')
           ._patch(device.id, {
             lockDateSynced: true,
-            initialLockDate:util.dateToMidnight(installment.dueDate),
+            initialLockDate: util.dateToMidnight(installment.dueDate),
             nextLockDate: util.dateToMidnight(installment.dueDate)
           })
           .catch((error) => {
@@ -359,6 +359,38 @@ const syncData: Sync = {
       .catch((error) => {
         console.log(error)
       })
+  },
+  routineSycn(app, device) {
+    new NuovoApi().getDevice(device.nuovoDeviceId).then((response) => {
+      if (!response.device_info.last_connected_at) {
+        return
+      }
+
+      syncData.proccessMambuPartialSycn(app, response.device_info, device.id, device.loan.accountId)
+    })
+  },
+  async proccessMambuPartialSycn(app, device, deviceId, loanAccountId) {
+    const nuvoDate = device.last_connected_at.split('-')
+    const newDate = `${nuvoDate[1]}-${nuvoDate[0]}-${nuvoDate[2]}`
+    const pathData = {
+      customInformation: [
+        {
+          customFieldID: 'Lastconnected', // Device Name
+          value: util.addDateTimeZone(newDate)
+        }
+      ]
+    }
+    new Mambu().updateLoan(loanAccountId, pathData).then(() => {
+      logger.info('DEVICE DATA SYNCED SUCCESSFULLY:MAMBU:=LASTCONNECTEDAT')
+      app
+        .service('device')
+        .patch(deviceId, { lastConnectedAt: new Date(newDate), lastSyncedAt: new Date() })
+        .catch((er) => {
+          console.log(er)
+
+          logger.info('FAILED TO UPDATE DEVICE-LOCAL:MAMBU:=LASTCONNECTEDAT')
+        })
+    })
   }
 }
 
