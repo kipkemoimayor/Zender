@@ -128,20 +128,20 @@ app.hooks({
   teardown: []
 })
 
-// syncJob(app)
+syncJob(app)
 
 // // Handle payment and schedules
 
 // reminder job
 
-// reminderJob(app)
+reminderJob(app)
 
-// lockJob(app)
+lockJob(app)
 
-// unlockJob(app)
+unlockJob(app)
 
-// smsJob(app)
+smsJob(app)
 
-// routineSycnData(app)
+routineSycnData(app)
 
 export { app }
