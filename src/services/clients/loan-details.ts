@@ -20,7 +20,6 @@ import { LoanDetailsService, getOptions } from './loan-details.class'
 import { loanDetailsPath, loanDetailsMethods } from './loan-details.shared'
 import { query } from '../../hooks/query'
 import { clientHook } from '../../hooks/client/client-hook'
-import { createLoan } from '../../hooks/loan/create-loan'
 import { discardData } from '../../hooks/dicardData'
 import { formatQuery } from '../../hooks/format-query'
 import { mambuAuth } from '../../hooks/auth/mambuAuth'
@@ -81,8 +80,7 @@ export const loanDetails = (app: Application) => {
       remove: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))]
     },
     after: {
-      all: [],
-      create: [createLoan]
+      all: []
     },
     error: {
       all: []

@@ -10,33 +10,6 @@ export type { IpList, IpListData, IpListQuery, IpListPatch } from './services/ip
 import { userClient } from './services/users/users.shared'
 export type { User, UserData, UserQuery, UserPatch } from './services/users/users.shared'
 
-import { numbersClient } from './services/numbers/numbers.shared'
-export type { Numbers, NumbersData, NumbersQuery, NumbersPatch } from './services/numbers/numbers.shared'
-
-import { disbursmentClient } from './services/disbursment/disbursment.shared'
-export type {
-  Disbursment,
-  DisbursmentData,
-  DisbursmentQuery,
-  DisbursmentPatch
-} from './services/disbursment/disbursment.shared'
-
-import { lockDeviceClient } from './services/lock-device/lock-device.shared'
-export type {
-  LockDevice,
-  LockDeviceData,
-  LockDeviceQuery,
-  LockDevicePatch
-} from './services/lock-device/lock-device.shared'
-
-import { deviceLockHistoryClient } from './services/device-lock-history/device-lock-history.shared'
-export type {
-  DeviceLockHistory,
-  DeviceLockHistoryData,
-  DeviceLockHistoryQuery,
-  DeviceLockHistoryPatch
-} from './services/device-lock-history/device-lock-history.shared'
-
 import { sentSmsClient } from './services/sent-sms/sent-sms.shared'
 export type { SentSms, SentSmsData, SentSmsQuery, SentSmsPatch } from './services/sent-sms/sent-sms.shared'
 
@@ -47,20 +20,6 @@ export type {
   SmsQueueQuery,
   SmsQueuePatch
 } from './services/sms-queue/sms-queue.shared'
-
-import { reminderClient } from './services/reminder/reminder.shared'
-export type {
-  Reminder,
-  ReminderData,
-  ReminderQuery,
-  ReminderPatch
-} from './services/reminder/reminder.shared'
-
-import { deviceClient } from './services/device/device.shared'
-export type { Device, DeviceData, DeviceQuery, DevicePatch } from './services/device/device.shared'
-
-import { loanClient } from './services/loan/loan.shared'
-export type { Loan, LoanData, LoanQuery, LoanPatch } from './services/loan/loan.shared'
 
 import { appEntryClient } from './services/app-entry/app-entry.shared'
 export type {
@@ -94,7 +53,7 @@ export type ClientApplication = Application<ServiceTypes, Configuration>
  * @see https://dove.feathersjs.com/api/client.html
  * @returns The Feathers client application
  */
-export const createClient = <Configuration = any,>(
+export const createClient = <Configuration = any>(
   connection: TransportConnection<ServiceTypes>,
   authenticationOptions: Partial<AuthenticationClientOptions> = {}
 ) => {
@@ -106,16 +65,8 @@ export const createClient = <Configuration = any,>(
 
   client.configure(loanDetailsClient)
   client.configure(appEntryClient)
-  client.configure(loanClient)
-  client.configure(deviceClient)
-  client.configure(reminderClient)
   client.configure(smsQueueClient)
   client.configure(sentSmsClient)
-  client.configure(deviceLockHistoryClient)
-  client.configure(lockDeviceClient)
-  client.configure(disbursmentClient)
-  client.configure(numbersClient)
-  client.configure(numbersClient)
   client.configure(userClient)
   client.configure(ipListClient)
   return client

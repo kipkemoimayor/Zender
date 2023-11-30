@@ -23,16 +23,10 @@ import { services } from './services/index'
 import { channels } from './channels'
 import middleware from './middleware'
 import bodyParser from 'body-parser'
-import { NuovoApi } from './nuovo/api'
-import { syncJob } from './jobs/sync'
-import { paymentJob } from './jobs/repayment'
-import { reminderJob } from './jobs/reminder'
+
 import util from './utils'
-import { lockJob } from './jobs/lock'
-import { unlockJob } from './jobs/unlock'
-import { smsJob } from './jobs/sendSMS'
-import { Forbidden, NotAuthenticated, NotFound } from '@feathersjs/errors'
-import { routineSycnData } from './jobs/lastConnectedSycn'
+
+import { NotFound } from '@feathersjs/errors'
 
 process.env.TZ = 'Africa/Nairobi'
 const session: any = {}
@@ -109,11 +103,6 @@ app.configure(channels)
 app.use(notFound())
 app.use(errorHandler({ logger }))
 
-// new NuovoApi().getAllDevices()
-
-// console.log(replaceHtml({startRepaymentDate:new Date().toDateString()}))
-
-// Register hooks that run on all service methods
 app.hooks({
   around: {
     all: [logError]
@@ -127,21 +116,5 @@ app.hooks({
   setup: [],
   teardown: []
 })
-
-syncJob(app)
-
-// // Handle payment and schedules
-
-// reminder job
-
-reminderJob(app)
-
-lockJob(app)
-
-unlockJob(app)
-
-smsJob(app)
-
-routineSycnData(app)
 
 export { app }
