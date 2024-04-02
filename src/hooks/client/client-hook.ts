@@ -9,7 +9,7 @@ export const clientHook = async (context: HookContext) => {
   // validate if client already exist
   const client = await app.service('client').find({
     query: {
-      idNumber: data.idNumber
+      phoneNumber: data.idNumber
     }
   })
 
@@ -17,8 +17,7 @@ export const clientHook = async (context: HookContext) => {
     throw new GeneralError('Client has already been registered')
   }
 
-  console.log(data);
-  
+  console.log(data)
 
   //
   context.additionalData = {

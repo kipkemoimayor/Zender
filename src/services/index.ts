@@ -1,3 +1,5 @@
+import { smsHook } from './sms-hook/sms-hook'
+import { smsHistory } from './sms-history/sms-history'
 import { ipList } from './ip-list/ip-list'
 import { user } from './users/users'
 import { sentSms } from './sent-sms/sent-sms'
@@ -8,6 +10,8 @@ import { loanDetails } from './clients/loan-details'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(smsHook)
+  app.configure(smsHistory)
   app.configure(ipList)
   app.configure(user)
   app.configure(sentSms)

@@ -27,6 +27,7 @@ import bodyParser from 'body-parser'
 import util from './utils'
 
 import { NotFound } from '@feathersjs/errors'
+import { audioHook } from './hooks/audio'
 
 process.env.TZ = 'Africa/Nairobi'
 const session: any = {}

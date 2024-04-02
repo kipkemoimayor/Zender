@@ -19,6 +19,7 @@ import { SentSmsService, getOptions } from './sent-sms.class'
 import { sentSmsPath, sentSmsMethods } from './sent-sms.shared'
 import { ipAuthHook } from '../../hooks/auth/ipFilter'
 import { iff, isProvider } from 'feathers-hooks-common'
+import { addSMSFiler } from '../../hooks/sms/add-client-filter'
 
 export * from './sent-sms.class'
 export * from './sent-sms.schema'
@@ -40,7 +41,7 @@ export const sentSms = (app: Application) => {
     before: {
       all: [schemaHooks.validateQuery(sentSmsQueryValidator), schemaHooks.resolveQuery(sentSmsQueryResolver)],
       find: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
-      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'), addSMSFiler)],
       create: [
         iff(isProvider('external'), ipAuthHook, authenticate('jwt')),
         schemaHooks.validateData(sentSmsDataValidator),

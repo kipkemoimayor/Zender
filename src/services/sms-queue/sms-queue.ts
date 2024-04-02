@@ -19,6 +19,7 @@ import { SmsQueueService, getOptions } from './sms-queue.class'
 import { smsQueuePath, smsQueueMethods } from './sms-queue.shared'
 import { ipAuthHook } from '../../hooks/auth/ipFilter'
 import { iff, isProvider } from 'feathers-hooks-common'
+import { addSMSFiler } from '../../hooks/sms/add-client-filter'
 
 export * from './sms-queue.class'
 export * from './sms-queue.schema'
@@ -45,7 +46,10 @@ export const smsQueue = (app: Application) => {
         schemaHooks.validateQuery(smsQueueQueryValidator),
         schemaHooks.resolveQuery(smsQueueQueryResolver)
       ],
-      find: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
+      find: [
+        // iff(isProvider('external'), ipAuthHook, authenticate('jwt'))
+        addSMSFiler
+      ],
       get: [iff(isProvider('external'), ipAuthHook, authenticate('jwt'))],
       create: [
         iff(isProvider('external'), ipAuthHook, authenticate('jwt')),

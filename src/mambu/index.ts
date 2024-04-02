@@ -153,7 +153,9 @@ export default class Mambu implements Imambu {
       })
       return response.data
     } catch (error: any) {
-      logger.log('error', error.response)
+      // logger.log('error', error.response)
+      console.log(error)
+
       throw new GeneralError(error)
     }
   }

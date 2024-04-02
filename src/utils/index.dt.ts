@@ -27,4 +27,6 @@ export interface Iutil {
   dateToMidnight: (date: any) => any
   daysBetween: (dateOne: any, dateTwo: any) => number
   createToken: (string: string) => void
+  replaceData: (string: string, replacements: any) => string
+  readFile: (filename: string) => any
 }

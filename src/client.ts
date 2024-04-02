@@ -4,6 +4,17 @@ import type { TransportConnection, Application } from '@feathersjs/feathers'
 import authenticationClient from '@feathersjs/authentication-client'
 import type { AuthenticationClientOptions } from '@feathersjs/authentication-client'
 
+import { smsHookClient } from './services/sms-hook/sms-hook.shared'
+export type { SmsHook, SmsHookData, SmsHookQuery, SmsHookPatch } from './services/sms-hook/sms-hook.shared'
+
+import { smsHistoryClient } from './services/sms-history/sms-history.shared'
+export type {
+  SmsHistory,
+  SmsHistoryData,
+  SmsHistoryQuery,
+  SmsHistoryPatch
+} from './services/sms-history/sms-history.shared'
+
 import { ipListClient } from './services/ip-list/ip-list.shared'
 export type { IpList, IpListData, IpListQuery, IpListPatch } from './services/ip-list/ip-list.shared'
 
@@ -53,7 +64,7 @@ export type ClientApplication = Application<ServiceTypes, Configuration>
  * @see https://dove.feathersjs.com/api/client.html
  * @returns The Feathers client application
  */
-export const createClient = <Configuration = any>(
+export const createClient = <Configuration = any,>(
   connection: TransportConnection<ServiceTypes>,
   authenticationOptions: Partial<AuthenticationClientOptions> = {}
 ) => {
@@ -69,5 +80,7 @@ export const createClient = <Configuration = any>(
   client.configure(sentSmsClient)
   client.configure(userClient)
   client.configure(ipListClient)
+  client.configure(smsHistoryClient)
+  client.configure(smsHookClient)
   return client
 }

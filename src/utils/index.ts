@@ -115,6 +115,11 @@ const util: Iutil = {
     })
     return file
   },
+
+  readFile: function (filename: string) {
+    const file = fs.readFileSync(path.join(__dirname, `../../public/audios/${filename}`))
+    return file
+  },
   /**
    * Format amount into readable digits
    * @param amount
@@ -318,6 +323,14 @@ const util: Iutil = {
 
     // Convert back to days and return
     return Math.floor(differenceMs / ONE_DAY)
+  },
+  replaceData(string, replacements) {
+    return string.replace(
+      /{(\w*)}/g, // or /{(\w*)}/g for "{this} instead of %this%"
+      function (m, key) {
+        return replacements.hasOwnProperty(key) ? replacements[key] : ''
+      }
+    )
   }
 }
 

@@ -1,11 +1,11 @@
 <app>
-     <id>PLAT012A</id>
-     <name>EASY PHONE</name>
+     <id>PLAT012AB</id>
+     <name>SMS LOAN GUARANTOR</name>
      <provider>MIS</provider>
-     <description>A tool to manage phone lending</description>
+     <description>A tool send sms to client guarantors</description>
      <extensionpoint>
-          <location>EXTENSION_MENU</location>
-          <label>EASY PHONE-NUOVO</label>
-          <url>https://lgfdeposit.spectrumcreditltd.com/easyphone-prod/api/</url>
+          <location>LOAN_ACCOUNT_VIEW</location>
+          <label>SMS GUARANTOR</label>
+          <url>https://lgfdeposit.spectrumcreditltd.com/sms-guarantor-dev/api/</url>
      </extensionpoint>
 </app>
